@@ -14,7 +14,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Mono;
 
-@Component
+//@Component
 @Slf4j
 public class AuthorizeFilter implements Ordered, GlobalFilter {
     @Override
@@ -25,6 +25,7 @@ public class AuthorizeFilter implements Ordered, GlobalFilter {
 
         //2.判断是否是登录
         if(request.getURI().getPath().contains("/login")){
+            log.info("用户Login");
             //放行
             return chain.filter(exchange);
         }
@@ -35,6 +36,7 @@ public class AuthorizeFilter implements Ordered, GlobalFilter {
         //4.判断token是否存在
         if(StringUtils.isBlank(token)){
             response.setStatusCode(HttpStatus.UNAUTHORIZED);
+            log.info("用户未登录");
             return response.setComplete();
         }
 

@@ -1,10 +1,11 @@
 package com.heima.model.article.pojos;
 
-import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
+import com.baomidou.mybatisplus.annotation.IdType;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 import java.io.Serializable;
 import java.util.Date;
@@ -17,13 +18,13 @@ import java.util.Date;
  * @author itheima
  */
 
+@EqualsAndHashCode(callSuper = true)
 @Data
 @TableName("ap_article")
-public class ApArticle implements Serializable {
+public class ApArticle extends ApArticleChannel implements Serializable{
 
-    @TableId(value = "id",type = IdType.ID_WORKER)
+    @TableId(value = "id",type = IdType.ASSIGN_UUID)
     private Long id;
-
 
     /**
      * 标题
@@ -42,17 +43,6 @@ public class ApArticle implements Serializable {
     @TableField("author_name")
     private String authorName;
 
-    /**
-     * 频道id
-     */
-    @TableField("channel_id")
-    private Integer channelId;
-
-    /**
-     * 频道名称
-     */
-    @TableField("channel_name")
-    private String channelName;
 
     /**
      * 文章布局  0 无图文章   1 单图文章    2 多图文章

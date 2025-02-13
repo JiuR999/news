@@ -13,4 +13,5 @@ public class WmWebConfig implements WebMvcConfigurer {
         registry.addInterceptor(new WmTokenInterceptor())
                 .addPathPatterns("/**");
     }
+
 }

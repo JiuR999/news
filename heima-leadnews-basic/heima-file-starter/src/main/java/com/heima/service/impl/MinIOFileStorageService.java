@@ -1,6 +1,7 @@
 package com.heima.service.impl;
 
 
+import com.google.common.net.HttpHeaders;
 import com.heima.config.MinIOConfig;
 import com.heima.config.MinIOConfigProperties;
 import com.heima.service.FileStorageService;
@@ -8,6 +9,7 @@ import io.minio.GetObjectArgs;
 import io.minio.MinioClient;
 import io.minio.PutObjectArgs;
 import io.minio.RemoveObjectArgs;
+import io.minio.errors.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -17,6 +19,8 @@ import org.springframework.util.StringUtils;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -58,12 +62,13 @@ public class MinIOFileStorageService implements FileStorageService {
      * @return  文件全路径
      */
     @Override
-    public String uploadImgFile(String prefix, String filename,InputStream inputStream) {
+    public String uploadImgFile(String prefix, String filename, String contentType, InputStream inputStream) {
         String filePath = builderFilePath(prefix, filename);
         try {
             PutObjectArgs putObjectArgs = PutObjectArgs.builder()
                     .object(filePath)
-                    .contentType("image/jpg")
+                    .contentType(contentType)
+//                    .contentType("image/jpg")
                     .bucket(minIOConfigProperties.getBucket()).stream(inputStream,inputStream.available(),-1)
                     .build();
             minioClient.putObject(putObjectArgs);
@@ -92,7 +97,8 @@ public class MinIOFileStorageService implements FileStorageService {
             PutObjectArgs putObjectArgs = PutObjectArgs.builder()
                     .object(filePath)
                     .contentType("text/html")
-                    .bucket(minIOConfigProperties.getBucket()).stream(inputStream,inputStream.available(),-1)
+                    .bucket(minIOConfigProperties.getBucket())
+                    .stream(inputStream,inputStream.available(),-1)
                     .build();
 
             minioClient.putObject(putObjectArgs);
@@ -104,6 +110,27 @@ public class MinIOFileStorageService implements FileStorageService {
         }catch (Exception ex){
             log.error("minio put file error.",ex);
             ex.printStackTrace();
+            throw new RuntimeException("上传文件失败");
+        }
+    }
+
+    @Override
+    public String uploadCommonFile(String prefix, String filename, String contentType, InputStream inputStream) {
+        String filePath = builderFilePath(prefix, filename);
+        try {
+            PutObjectArgs objectArgs = PutObjectArgs.builder()
+                    .object(filePath)
+                    .contentType(contentType)
+                    .bucket(minIOConfigProperties.getBucket())
+                    .stream(inputStream, inputStream.available(), -1)
+                    .build();
+            minioClient.putObject(objectArgs);
+            StringBuilder url = new StringBuilder(minIOConfigProperties.getReadPath());
+            url.append(separator).append(minIOConfigProperties.getBucket()).append(separator).append(filePath);
+            return url.toString();
+        } catch (Exception e) {
+            log.error("minio put file error.",e);
+            e.printStackTrace();
             throw new RuntimeException("上传文件失败");
         }
     }
@@ -139,7 +166,7 @@ public class MinIOFileStorageService implements FileStorageService {
     public byte[] downLoadFile(String pathUrl)  {
         String key = pathUrl.replace(minIOConfigProperties.getEndpoint()+"/","");
         int index = key.indexOf(separator);
-        String bucket = key.substring(0,index);
+//        String bucket = key.substring(0,index);
         String filePath = key.substring(index+1);
         InputStream inputStream = null;
         try {

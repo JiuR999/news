@@ -6,6 +6,8 @@ import com.heima.model.wemedia.dtos.WmMaterialDto;
 import com.heima.model.wemedia.pojos.WmMaterial;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.servlet.http.HttpServletResponse;
+
 /**
  * <p>
  * 自媒体图文素材信息表 服务类
@@ -17,6 +19,8 @@ import org.springframework.web.multipart.MultipartFile;
 public interface IWmMaterialService extends IService<WmMaterial> {
 
     ResponseResult uploadPicture(MultipartFile multipartFile);
+    ResponseResult uploadPicture2(MultipartFile multipartFile);
+    void download(String url, HttpServletResponse response);
     ResponseResult<WmMaterial> list(WmMaterialDto wmMaterialDto);
 
     ResponseResult delete(Integer id);

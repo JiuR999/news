@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.heima.user.mapper.UserRoleMapper">
+
+    <resultMap id="UserRoleResultMap" type="com.heima.model.user.vos.RoleVO">
+
+        <id property="id" column="id" jdbcType="VARCHAR"/>
+        <result property="name" column="name" jdbcType="VARCHAR"/>
+        <collection property="users" ofType="com.heima.model.user.pojos.ApUser">
+            <id property="id" column="user_id" jdbcType="INTEGER"/>
+            <result property="name" column="user_name" jdbcType="VARCHAR"/>
+        </collection>
+
+<!--        <collection property="menus" ofType="java.lang.Integer" column="menu_id" select="selectMenuIdsByRoleId" javaType="ArrayList" />-->
+    </resultMap>
+
+    <insert id="add">
+        insert ignore into swust_user_role(role_id,user_id)
+        values (#{roleId},#{userId})
+    </insert>
+
+    <update id="batchInsert">
+        insert into swust_menu_role(role_id,menu_id)
+        values
+        <foreach collection="roles" item="item"  separator=",">
+            ( #{roleId},#{item} )
+        </foreach>
+    </update>
+
+    <delete id="delete">
+        delete from swust_menu_role where role_id = #{roleId}
+    </delete>
+    <delete id="deleteUsers" parameterType="java.lang.Integer">
+        delete from swust_user_role where role_id = #{roleId}
+    </delete>
+
+    <select id="list" resultMap="UserRoleResultMap">
+        SELECT r.id,
+               r.NAME,
+               u.id user_id,
+               u.NAME user_name,
+               mr.menu_id
+        FROM swust_role r
+                 LEFT JOIN swust_user_role ur ON ur.role_id = r.id
+                 LEFT JOIN ap_user u ON u.id = ur.user_id
+                 LEFT JOIN swust_menu_role mr ON mr.role_id = r.id
+    </select>
+
+    <select id="getById" resultType="com.heima.model.user.pojos.UserRole">
+        SELECT
+            DISTINCT r.id `key`,
+            r.name label,
+            r.parent_id,
+            r.icon
+        FROM
+            (
+                WITH recursive menu AS (
+                    SELECT
+                        *
+                    FROM
+                        swust_system_menu
+                    WHERE
+                        id IN ( SELECT menu_id FROM swust_menu_role WHERE role_id = #{roleId} ) UNION ALL
+                    SELECT
+                        m.*
+                    FROM
+                        swust_system_menu m
+                            INNER JOIN menu b ON b.parent_id = m.id
+                ) SELECT
+                    *
+                FROM
+                    menu
+            ) r
+    </select>
+
+    <select id="selectMenuIdsByRoleId" resultType="java.lang.Integer">
+        SELECT menu_id FROM swust_menu_role mr WHERE mr.role_id = #{id}
+    </select>
+
+    <select id="selectMenuIdsByUserId" resultType="java.lang.String">
+        SELECT DISTINCT m.path
+        FROM swust_user_role r
+                 INNER JOIN swust_menu_role mr
+                            ON mr.role_id = r.role_id
+                 INNER JOIN swust_system_menu m
+                            ON m.id = mr.menu_id
+        WHERE r.user_id = #{userId}
+    </select>
+</mapper>

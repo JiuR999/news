@@ -16,9 +16,10 @@ public class AppJwtUtil {
     private static final int REFRESH_TIME = 300;
 
     // 生产ID
-    public static String getToken(Long id) {
+    public static String getToken(Object object) {
         Map<String, Object> claimMaps = new HashMap<>();
-        claimMaps.put("id", id);
+//        claimMaps.put("current_user", .toJSONString(obj));
+        claimMaps.put("user", object);
         long currentTime = System.currentTimeMillis();
         return Jwts.builder()
                 .setId(UUID.randomUUID().toString())
@@ -39,31 +40,32 @@ public class AppJwtUtil {
      * @param token
      * @return
      */
-    private static Jws<Claims> getJws(String token) {
+    public static Claims getJws(String token) {
         return Jwts.parser()
                 .setSigningKey(generalKey())
-                .parseClaimsJws(token);
+                .parseClaimsJws(token)
+                .getBody();
     }
 
-    /**
+/*    *//**
      * 获取payload body信息
      *
      * @param token
      * @return
-     */
+     *//*
     public static Claims getClaimsBody(String token) throws ExpiredJwtException {
         return getJws(token).getBody();
-    }
+    }*/
 
-    /**
+/*    *//**
      * 获取hearder body信息
      *
      * @param token
      * @return
-     */
+     *//*
     public static JwsHeader getHeaderBody(String token) {
         return getJws(token).getHeader();
-    }
+    }*/
 
     /**
      * 是否过期
@@ -100,8 +102,7 @@ public class AppJwtUtil {
        /* Map map = new HashMap();
         map.put("id","11");*/
         System.out.println(AppJwtUtil.getToken(1102L));
-        Jws<Claims> jws = AppJwtUtil.getJws("eyJhbGciOiJIUzUxMiIsInppcCI6IkdaSVAifQ.H4sIAAAAAAAAADWLQQqEMAwA_5KzhURNt_qb1KZYQSi0wi6Lf9942NsMw3zh6AVW2DYmDGl2WabkZgreCaM6VXzhFBfJMcMARTqsxIG9Z888QLui3e3Tup5Pb81013KKmVzJTGo11nf9n8v4nMUaEY73DzTabjmDAAAA.4SuqQ42IGqCgBai6qd4RaVpVxTlZIWC826QA9kLvt9d-yVUw82gU47HDaSfOzgAcloZedYNNpUcd18Ne8vvjQA");
-        Claims claims = jws.getBody();
+        Claims claims = AppJwtUtil.getJws("eyJhbGciOiJIUzUxMiIsInppcCI6IkdaSVAifQ.H4sIAAAAAAAAADWLQQqEMAwA_5KzhURNt_qb1KZYQSi0wi6Lf9942NsMw3zh6AVW2DYmDGl2WabkZgreCaM6VXzhFBfJMcMARTqsxIG9Z888QLui3e3Tup5Pb81013KKmVzJTGo11nf9n8v4nMUaEY73DzTabjmDAAAA.4SuqQ42IGqCgBai6qd4RaVpVxTlZIWC826QA9kLvt9d-yVUw82gU47HDaSfOzgAcloZedYNNpUcd18Ne8vvjQA");
         System.out.println(claims.get("id"));
 
     }

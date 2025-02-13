@@ -1,14 +1,17 @@
 #全局端口定义server:
 # 全局字符集设置
 spring:
-  http:
+  aop:
+    proxy-target-class: true
+  mvc:
+    pathmatch:
+      matching-strategy: ant_path_matcher
+server:
+  tomcat:
+    uri-encoding: utf-8
+  servlet:
     encoding:
       force: true
       charset: utf-8
       enabled: true
-  aop:
-    proxy-target-class: true
-server:
-  tomcat:
-    uri-encoding: utf-8
 

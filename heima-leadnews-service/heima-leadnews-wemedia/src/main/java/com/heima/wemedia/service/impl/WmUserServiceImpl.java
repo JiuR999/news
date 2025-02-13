@@ -4,12 +4,14 @@ import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.heima.model.common.dtos.ResponseResult;
 import com.heima.model.common.enums.AppHttpCodeEnum;
+import com.heima.model.common.pojos.CurrentUser;
 import com.heima.model.wemedia.dtos.WmLoginDto;
 import com.heima.model.wemedia.pojos.WmUser;
 import com.heima.utils.common.AppJwtUtil;
 import com.heima.wemedia.mapper.WmUserMapper;
 import com.heima.wemedia.service.WmUserService;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.util.DigestUtils;
 
@@ -18,7 +20,6 @@ import java.util.Map;
 
 @Service
 public class WmUserServiceImpl extends ServiceImpl<WmUserMapper, WmUser> implements WmUserService {
-
     @Override
     public ResponseResult login(WmLoginDto dto) {
         //1.检查参数
@@ -39,7 +40,10 @@ public class WmUserServiceImpl extends ServiceImpl<WmUserMapper, WmUser> impleme
         if(pswd.equals(wmUser.getPassword())){
             //4.返回数据  jwt
             Map<String,Object> map  = new HashMap<>();
-            map.put("token", AppJwtUtil.getToken(wmUser.getId().longValue()));
+            CurrentUser currentUser = new CurrentUser();
+            BeanUtils.copyProperties(wmUser,currentUser);
+            System.out.println("Wemedia登录:"+currentUser);
+            map.put("token", AppJwtUtil.getToken(currentUser));
             wmUser.setSalt("");
             wmUser.setPassword("");
             map.put("user",wmUser);

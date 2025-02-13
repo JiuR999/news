@@ -41,21 +41,21 @@ public class AuthorizeFilter implements Ordered, GlobalFilter {
 
         //5.判断token是否有效
         try {
-            Claims claimsBody = AppJwtUtil.getClaimsBody(token);
+            Claims claimsBody = AppJwtUtil.getJws(token);
             //是否是过期
             int result = AppJwtUtil.verifyToken(claimsBody);
             if (result == 1 || result == 2) {
                 response.setStatusCode(HttpStatus.UNAUTHORIZED);
                 return response.setComplete();
             }
-//获得token解析后中的用户信息
+/*            //获得token解析后中的用户信息
             Object userId = claimsBody.get("id");
-//在header中添加新的信息
+            //在header中添加新的信息
             ServerHttpRequest serverHttpRequest = request.mutate().headers(httpHeaders -> {
                 httpHeaders.add("userId", userId + "");
             }).build();
-//重置header
-            exchange.mutate().request(serverHttpRequest).build();
+            //重置header
+            exchange.mutate().request(serverHttpRequest).build();*/
         } catch (Exception e) {
             e.printStackTrace();
         }

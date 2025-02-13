@@ -7,6 +7,13 @@
         <groupId>com.heima</groupId>
         <version>1.0-SNAPSHOT</version>
     </parent>
+    <dependencies>
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-commons</artifactId>
+        </dependency>
+
+    </dependencies>
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>heima-leadnews-user</artifactId>

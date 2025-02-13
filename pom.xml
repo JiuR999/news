@@ -23,34 +23,34 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>2.3.9.RELEASE</version>
+        <version>2.7.2</version>
     </parent>
     <properties>
         <!-- 项目源码及编译输出的编码 -->
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <!-- 项目编译JDK版本 -->
-        <maven.compiler.source>1.8</maven.compiler.source>
-        <maven.compiler.target>1.8</maven.compiler.target>
+        <maven.compiler.source>17</maven.compiler.source>
+        <maven.compiler.target>17</maven.compiler.target>
 
         <!-- 依赖包版本管理 -->
         <spring.boot.version>2.3.9.RELEASE</spring.boot.version>
         <commons.io.version>2.6</commons.io.version>
         <commons.codec.version>1.12</commons.codec.version>
-        <lombok.version>1.18.8</lombok.version>
+        <lombok.version>1.18.22</lombok.version>
         <mysql.version>5.1.46</mysql.version>
         <mybatis.version>3.5.1</mybatis.version>
         <mybatis.spring.version>2.0.1</mybatis.spring.version>
-        <mybatis.plus.version>3.4.1</mybatis.plus.version>
+        <mybatis.plus.version>3.5.9</mybatis.plus.version>
         <lang3.version>3.5</lang3.version>
         <pagehelper.version>1.2.3</pagehelper.version>
         <jsoup.version>1.10.2</jsoup.version>
         <jwt.version>0.9.1</jwt.version>
-        <fastjson.version>1.2.58</fastjson.version>
+        <fastjson.version>1.2.76</fastjson.version>
         <fastjson.dataformat.version>2.9.9</fastjson.dataformat.version>
         <spring.jwt.version>1.0.9.RELEASE</spring.jwt.version>
         <spring.boot.admin.version>2.1.6</spring.boot.admin.version>
-        <spring.cloud.version>Hoxton.SR10</spring.cloud.version>
+        <spring.cloud.version>2021.0.8</spring.cloud.version>
         <curator.version>4.2.0</curator.version>
         <hanlp.version>portable-1.3.4</hanlp.version>
         <fastdfs.version>1.26.5</fastdfs.version>
@@ -60,15 +60,29 @@
         <elasticsearch.version>7.2.0</elasticsearch.version>
         <ali.core.version>4.1.1</ali.core.version>
         <ali.green.version>3.4.1</ali.green.version>
-        <kafka.version>2.6.6</kafka.version>
-        <kafka.client.version>2.5.1</kafka.client.version>
+        <kafka.version>2.8.4</kafka.version>
+        <kafka.client.version>2.6.0</kafka.client.version>
         <reflections.version>0.9.11</reflections.version>
         <swagger.version>2.9.2</swagger.version>
-        <knife4j.version>2.0.2</knife4j.version>
+        <knife4j.version>3.0.3</knife4j.version>
         <com.alibaba.cloud>2.2.5.RELEASE</com.alibaba.cloud>
         <xxl.job.version>2.2.0-SNAPSHOT</xxl.job.version>
+        <bootstrap.version>3.1.3</bootstrap.version>
+        <mysql-connector-java.version>8.0.26</mysql-connector-java.version>
     </properties>
     <dependencies>
+
+        <dependency>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-resources-plugin</artifactId>
+            <version>3.2.0</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-jar-plugin</artifactId>
+            <version>3.2.2</version>
+        </dependency>
+
         <!--日志处理包-->
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -81,6 +95,29 @@
             <version>${lombok.version}</version>
             <scope>provided</scope>
         </dependency>
+
+        <dependency>
+            <groupId>com.github.xiaoymin</groupId>
+            <artifactId>knife4j-openapi2-spring-boot-starter</artifactId>
+            <version>4.0.0</version>
+        </dependency>
+        <!--jwt-->
+        <dependency>
+            <groupId>javax.xml.bind</groupId>
+            <artifactId>jaxb-api</artifactId>
+            <version>2.3.1</version>
+        </dependency>
+
+        <!--        <dependency>
+                    <groupId>io.springfox</groupId>
+                    <artifactId>springfox-swagger2</artifactId>
+                    <version>${swagger.version}</version>
+                </dependency>-->
+        <!--        <dependency>
+                    <groupId>com.github.xiaoymin</groupId>
+                    <artifactId>knife4j-spring-ui</artifactId>
+                    <version>3.0.3</version>
+                </dependency>-->
     </dependencies>
     <dependencyManagement>
 
@@ -165,22 +202,41 @@
                 <artifactId>commons-codec</artifactId>
                 <version>${commons.codec.version}</version>
             </dependency>
-            <!-- Mysql 数据库 -->
+            <!--Mybatis-Plus-->
             <dependency>
                 <groupId>mysql</groupId>
                 <artifactId>mysql-connector-java</artifactId>
-                <version>${mysql.version}</version>
+                <version>${mysql-connector-java.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.baomidou</groupId>
+                <artifactId>mybatis-plus-bom</artifactId>
+                <version>${mybatis.plus.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
             </dependency>
             <dependency>
-                <groupId>org.mybatis</groupId>
-                <artifactId>mybatis</artifactId>
-                <version>${mybatis.version}</version>
+                <groupId>com.baomidou</groupId>
+                <artifactId>mybatis-plus-extension</artifactId>
+                <version>${mybatis.plus.version}</version>
             </dependency>
-            <dependency>
-                <groupId>org.mybatis</groupId>
-                <artifactId>mybatis-spring</artifactId>
-                <version>${mybatis.spring.version}</version>
-            </dependency>
+            <!--            &lt;!&ndash; Mysql 数据库 &ndash;&gt;
+                        <dependency>
+                            <groupId>mysql</groupId>
+                            <artifactId>mysql-connector-java</artifactId>
+                            <version>${mysql.version}</version>
+                        </dependency>
+                        <dependency>
+                            <groupId>org.mybatis</groupId>
+                            <artifactId>mybatis</artifactId>
+                            <version>${mybatis.version}</version>
+                        </dependency>-->
+            <!--            <dependency>
+                            <groupId>org.mybatis</groupId>
+                            <artifactId>mybatis-spring</artifactId>
+                            <version>${mybatis.spring.version}</version>
+                        </dependency>-->
             <!-- jsoup -->
             <dependency>
                 <groupId>org.jsoup</groupId>
@@ -193,12 +249,13 @@
                 <artifactId>jjwt</artifactId>
                 <version>${jwt.version}</version>
             </dependency>
-            <!-- fastjson -->
+            <!--             fastjson -->
             <dependency>
                 <groupId>com.alibaba</groupId>
                 <artifactId>fastjson</artifactId>
                 <version>${fastjson.version}</version>
-            </dependency><dependency>
+            </dependency>
+            <dependency>
                 <groupId>com.fasterxml.jackson.dataformat</groupId>
                 <artifactId>jackson-dataformat-cbor</artifactId>
                 <version>${fastjson.dataformat.version}</version>
@@ -217,6 +274,28 @@
                 <scope>import</scope>
             </dependency>
             <!--spring cloud alibaba-->
+
+            <!-- nacos配置中心 -->
+            <dependency>
+                <groupId>com.alibaba.cloud</groupId>
+                <artifactId>spring-cloud-starter-alibaba-nacos-config</artifactId>
+                <version>2021.0.1.0</version>
+            </dependency>
+
+            <!-- nacos 注册中心-->
+            <dependency>
+                <groupId>com.alibaba.cloud</groupId>
+                <artifactId>spring-cloud-starter-alibaba-nacos-discovery</artifactId>
+                <version>2021.0.1.0</version>
+            </dependency>
+
+            <!-- 解决新版cloud中nacos配置的使用 -->
+            <dependency>
+                <groupId>org.springframework.cloud</groupId>
+                <artifactId>spring-cloud-starter-bootstrap</artifactId>
+                <version>${bootstrap.version}</version>
+            </dependency>
+
             <dependency>
                 <groupId>com.alibaba.cloud</groupId>
                 <artifactId>spring-cloud-alibaba-dependencies</artifactId>
@@ -294,26 +373,36 @@
                 <artifactId>kafka-clients</artifactId>
                 <version>${kafka.client.version}</version>
             </dependency>
-            <dependency>
-                <groupId>com.github.xiaoymin</groupId>
-                <artifactId>knife4j-spring-boot-starter</artifactId>
-                <version>${knife4j.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>io.springfox</groupId>
-                <artifactId>springfox-swagger2</artifactId>
-                <version>${swagger.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>io.springfox</groupId>
-                <artifactId>springfox-swagger-ui</artifactId>
-                <version>${swagger.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>com.baomidou</groupId>
-                <artifactId>mybatis-plus-boot-starter</artifactId>
-                <version>${mybatis.plus.version}</version>
-            </dependency>
+
+
+            <!--            <dependency>
+                            <groupId>com.github.xiaoymin</groupId>
+                            <artifactId>knife4j-spring-boot-starter</artifactId>
+                            <version>${knife4j.version}</version>
+                        </dependency>-->
+
+            <!--            <dependency>
+                            <groupId>org.springdoc</groupId>
+                            <artifactId>springdoc-openapi-ui</artifactId>
+                            <version>${swagger.version}</version>
+                        </dependency>-->
+
+            <!--            <dependency>
+                            <groupId>io.springfox</groupId>
+                            <artifactId>springfox-swagger2</artifactId>
+                            <version>${swagger.version}</version>
+                        </dependency>
+                        <dependency>
+                            <groupId>io.springfox</groupId>
+                            <artifactId>springfox-swagger-ui</artifactId>
+                            <version>${swagger.version}</version>
+                        </dependency>-->
+
+            <!--            <dependency>
+                            <groupId>com.baomidou</groupId>
+                            <artifactId>mybatis-plus-boot-starter</artifactId>
+                            <version>${mybatis.plus.version}</version>
+                        </dependency>-->
         </dependencies>
     </dependencyManagement>
 
@@ -346,17 +435,17 @@
         </testResources>
     </build>
 
-    <repositories>
-        <repository>
-            <id>spring</id>
-            <url>https://maven.aliyun.com/repository/spring</url>
-            <releases>
-                <enabled>true</enabled>
-            </releases>
-            <snapshots>
-                <enabled>true</enabled>
-            </snapshots>
-        </repository>
-    </repositories>
+    <!--    <repositories>
+            <repository>
+                <id>spring</id>
+                <url>https://maven.aliyun.com/repository/spring</url>
+                <releases>
+                    <enabled>true</enabled>
+                </releases>
+                <snapshots>
+                    <enabled>true</enabled>
+                </snapshots>
+            </repository>
+        </repositories>-->
 
 </project>

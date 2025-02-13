@@ -3,10 +3,12 @@ package com.heima.model.wemedia.dtos;
 import com.heima.model.common.dtos.PageRequestDto;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 import java.time.LocalDateTime;
 
 @Data
+@EqualsAndHashCode(callSuper=false)
 public class WmNewsQueryDto extends PageRequestDto {
     private LocalDateTime beginPubDate;
 

@@ -1,5 +1,6 @@
 package com.heima.utils.common;
 
+import com.alibaba.fastjson.JSON;
 import io.jsonwebtoken.*;
 
 import javax.crypto.SecretKey;
@@ -7,6 +8,7 @@ import javax.crypto.spec.SecretKeySpec;
 import java.util.*;
 
 public class AppJwtUtil {
+    public static final String CURRENT_USER = "current_user";
 
     // TOKEN的有效期一天（S）
     private static final int TOKEN_TIME_OUT = 3_600;
@@ -16,9 +18,9 @@ public class AppJwtUtil {
     private static final int REFRESH_TIME = 300;
 
     // 生产ID
-    public static String getToken(Long id){
+    public static String getToken(Object obj){
         Map<String, Object> claimMaps = new HashMap<>();
-        claimMaps.put("id",id);
+        claimMaps.put(CURRENT_USER, JSON.toJSONString(obj));
         long currentTime = System.currentTimeMillis();
         return Jwts.builder()
                 .setId(UUID.randomUUID().toString())
@@ -55,6 +57,7 @@ public class AppJwtUtil {
         try {
             return getJws(token).getBody();
         }catch (ExpiredJwtException e){
+            e.printStackTrace();
             return null;
         }
     }
@@ -110,9 +113,9 @@ public class AppJwtUtil {
        /* Map map = new HashMap();
         map.put("id","11");*/
         System.out.println(AppJwtUtil.getToken(1102L));
-        Jws<Claims> jws = AppJwtUtil.getJws("eyJhbGciOiJIUzUxMiIsInppcCI6IkdaSVAifQ.H4sIAAAAAAAAADWLQQqEMAwA_5KzhURNt_qb1KZYQSi0wi6Lf9942NsMw3zh6AVW2DYmDGl2WabkZgreCaM6VXzhFBfJMcMARTqsxIG9Z888QLui3e3Tup5Pb81013KKmVzJTGo11nf9n8v4nMUaEY73DzTabjmDAAAA.4SuqQ42IGqCgBai6qd4RaVpVxTlZIWC826QA9kLvt9d-yVUw82gU47HDaSfOzgAcloZedYNNpUcd18Ne8vvjQA");
+        Jws<Claims> jws = AppJwtUtil.getJws("eyJhbGciOiJIUzUxMiIsInppcCI6IkdaSVAifQ.H4sIAAAAAAAA_zXLSwoDIRBF0b3UWMFSY382EzRWEwOK-IEOTe89OsisLvXOBZ8WYAd0xmmFD05-Ia43gdxprzgeq1ztQehJAoNgG-y4KL0ZJaRgULsbun5rozj_tY58U4h2lO1-lM153HTmvzRmylcvhVJ79koF9gvC2CIKySDZSNP5GBLc9w-CllDxowAAAA.EsNLm8zYT6syqtMoxcxy20SFp7wzH88JfuGl8Sa_wOdbw7CqTf1P6XN02UyfBfel_jdBA-8bScQRfjRc5Uw2qg");
         Claims claims = jws.getBody();
-        System.out.println(claims.get("id"));
+        System.out.println(claims.get(CURRENT_USER));
 
     }
 
