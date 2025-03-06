@@ -1,0 +1,4 @@
+org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
+  com.swust.common.exception.ExceptionCatch,\
+  com.swust.common.swagger.Swagger2Configuration,\
+  com.swust.common.redis.CacheService

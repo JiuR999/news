@@ -2,18 +2,18 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/heima-leadnews-basic/heima-file-starter/heima-file-starter.iml" filepath="$PROJECT_DIR$/heima-leadnews-basic/heima-file-starter/heima-file-starter.iml" />
-      <module fileurl="file://$PROJECT_DIR$/heima-leadnews-gateway/heima-leadnews-app-gateway/heima-leadnews-app-gateway.iml" filepath="$PROJECT_DIR$/heima-leadnews-gateway/heima-leadnews-app-gateway/heima-leadnews-app-gateway.iml" />
-      <module fileurl="file://$PROJECT_DIR$/heima-leadnews-service/heima-leadnews-article/heima-leadnews-article.iml" filepath="$PROJECT_DIR$/heima-leadnews-service/heima-leadnews-article/heima-leadnews-article.iml" />
-      <module fileurl="file://$PROJECT_DIR$/heima-leadnews-common/heima-leadnews-common.iml" filepath="$PROJECT_DIR$/heima-leadnews-common/heima-leadnews-common.iml" />
-      <module fileurl="file://$PROJECT_DIR$/heima-leadnews-feign-api/heima-leadnews-feign-api.iml" filepath="$PROJECT_DIR$/heima-leadnews-feign-api/heima-leadnews-feign-api.iml" />
-      <module fileurl="file://$PROJECT_DIR$/heima-leadnews-gateway/heima-leadnews-gateway.iml" filepath="$PROJECT_DIR$/heima-leadnews-gateway/heima-leadnews-gateway.iml" />
-      <module fileurl="file://$PROJECT_DIR$/heima-leadnews-model/heima-leadnews-model.iml" filepath="$PROJECT_DIR$/heima-leadnews-model/heima-leadnews-model.iml" />
-      <module fileurl="file://$PROJECT_DIR$/heima-leadnews-service/heima-leadnews-service.iml" filepath="$PROJECT_DIR$/heima-leadnews-service/heima-leadnews-service.iml" />
-      <module fileurl="file://$PROJECT_DIR$/heima-leadnews-service/heima-leadnews-user/heima-leadnews-user.iml" filepath="$PROJECT_DIR$/heima-leadnews-service/heima-leadnews-user/heima-leadnews-user.iml" />
-      <module fileurl="file://$PROJECT_DIR$/heima-leadnews-utils/heima-leadnews-utils.iml" filepath="$PROJECT_DIR$/heima-leadnews-utils/heima-leadnews-utils.iml" />
-      <module fileurl="file://$PROJECT_DIR$/heima-leadnews-service/heima-leadnews-wemedia/heima-leadnews-wemedia.iml" filepath="$PROJECT_DIR$/heima-leadnews-service/heima-leadnews-wemedia/heima-leadnews-wemedia.iml" />
-      <module fileurl="file://$PROJECT_DIR$/heima-leadnews-gateway/heima-leadnews-wemedia-gateway/heima-leadnews-wemedia-gateway.iml" filepath="$PROJECT_DIR$/heima-leadnews-gateway/heima-leadnews-wemedia-gateway/heima-leadnews-wemedia-gateway.iml" />
+      <module fileurl="file://$PROJECT_DIR$/swust-leadnews-basic/swust-file-starter/swust-file-starter.iml" filepath="$PROJECT_DIR$/swust-leadnews-basic/swust-file-starter/swust-file-starter.iml" />
+      <module fileurl="file://$PROJECT_DIR$/swust-leadnews-gateway/swust-leadnews-app-gateway/swust-leadnews-app-gateway.iml" filepath="$PROJECT_DIR$/swust-leadnews-gateway/swust-leadnews-app-gateway/swust-leadnews-app-gateway.iml" />
+      <module fileurl="file://$PROJECT_DIR$/swust-leadnews-service/swust-leadnews-article/swust-leadnews-article.iml" filepath="$PROJECT_DIR$/swust-leadnews-service/swust-leadnews-article/swust-leadnews-article.iml" />
+      <module fileurl="file://$PROJECT_DIR$/swust-leadnews-common/swust-leadnews-common.iml" filepath="$PROJECT_DIR$/swust-leadnews-common/swust-leadnews-common.iml" />
+      <module fileurl="file://$PROJECT_DIR$/swust-leadnews-feign-api/swust-leadnews-feign-api.iml" filepath="$PROJECT_DIR$/swust-leadnews-feign-api/swust-leadnews-feign-api.iml" />
+      <module fileurl="file://$PROJECT_DIR$/swust-leadnews-gateway/swust-leadnews-gateway.iml" filepath="$PROJECT_DIR$/swust-leadnews-gateway/swust-leadnews-gateway.iml" />
+      <module fileurl="file://$PROJECT_DIR$/swust-leadnews-model/swust-leadnews-model.iml" filepath="$PROJECT_DIR$/swust-leadnews-model/swust-leadnews-model.iml" />
+      <module fileurl="file://$PROJECT_DIR$/swust-leadnews-service/swust-leadnews-service.iml" filepath="$PROJECT_DIR$/swust-leadnews-service/swust-leadnews-service.iml" />
+      <module fileurl="file://$PROJECT_DIR$/swust-leadnews-service/swust-leadnews-user/swust-leadnews-user.iml" filepath="$PROJECT_DIR$/swust-leadnews-service/swust-leadnews-user/swust-leadnews-user.iml" />
+      <module fileurl="file://$PROJECT_DIR$/swust-leadnews-utils/swust-leadnews-utils.iml" filepath="$PROJECT_DIR$/swust-leadnews-utils/swust-leadnews-utils.iml" />
+      <module fileurl="file://$PROJECT_DIR$/swust-leadnews-service/swust-leadnews-wemedia/swust-leadnews-wemedia.iml" filepath="$PROJECT_DIR$/swust-leadnews-service/swust-leadnews-wemedia/swust-leadnews-wemedia.iml" />
+      <module fileurl="file://$PROJECT_DIR$/swust-leadnews-gateway/swust-leadnews-wemedia-gateway/swust-leadnews-wemedia-gateway.iml" filepath="$PROJECT_DIR$/swust-leadnews-gateway/swust-leadnews-wemedia-gateway/swust-leadnews-wemedia-gateway.iml" />
     </modules>
   </component>
 </project>

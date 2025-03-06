@@ -6,8 +6,22 @@
       <list>
         <option value="$PROJECT_DIR$/pom.xml" />
         <option value="$PROJECT_DIR$/heima-leadnews-basic/heima-file-starter/pom.xml" />
+        <option value="$PROJECT_DIR$/swust-leadnews-basic/heima-file-starter/pom.xml" />
+        <option value="$PROJECT_DIR$/swust-leadnews-basic/swust-file-starter/pom.xml" />
+        <option value="$PROJECT_DIR$/heima-leadnews-test/pom.xml" />
+        <option value="$PROJECT_DIR$/swust-leadnews-model/pom.xml" />
+        <option value="$PROJECT_DIR$/swust-leadnews-gateway/pom.xml" />
+        <option value="$PROJECT_DIR$/swust-leadnews-service/swust-leadnews-schedule/pom.xml" />
       </list>
     </option>
+    <option name="ignoredFiles">
+      <set>
+        <option value="$PROJECT_DIR$/swust-leadnews-schedule/pom.xml" />
+      </set>
+    </option>
+  </component>
+  <component name="PWA">
+    <option name="wasEnabledAtLeastOnce" value="true" />
   </component>
   <component name="ProjectRootManager" version="2" languageLevel="JDK_1_8" project-jdk-name="17" project-jdk-type="JavaSDK" />
 </project>

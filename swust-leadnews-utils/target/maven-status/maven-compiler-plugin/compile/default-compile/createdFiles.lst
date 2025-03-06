@@ -1,0 +1,17 @@
+com\swust\utils\common\AppJwtUtil.class
+com\swust\utils\common\UrlSignUtils.class
+com\swust\utils\common\Base64Utils.class
+com\swust\utils\common\BCrypt.class
+com\swust\utils\common\DESUtils.class
+com\swust\utils\common\DateUtils.class
+com\swust\utils\common\IdsUtils.class
+com\swust\utils\common\SensitiveWordUtil.class
+com\swust\utils\common\SimHashUtils.class
+com\swust\utils\common\ZipUtils.class
+com\swust\utils\common\WmThreadLocalUtil.class
+com\swust\utils\common\Compute.class
+com\swust\utils\common\FileUtils.class
+com\swust\utils\common\SnowflakeIdWorker.class
+com\swust\utils\common\MD5Utils.class
+com\swust\utils\common\ReflectUtils.class
+com\swust\utils\common\BurstUtils.class

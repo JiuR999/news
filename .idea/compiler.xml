@@ -7,43 +7,47 @@
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
-        <module name="heima-leadnews-test" />
-        <module name="heima-file-starter" />
-        <module name="heima-leadnews-wemedia-gateway" />
-        <module name="heima-leadnews-utils" />
-        <module name="heima-leadnews-wemedia" />
-        <module name="heima-leadnews-feign-api" />
-        <module name="heima-leadnews-user" />
-        <module name="heima-leadnews-app-gateway" />
-        <module name="heima-leadnews-article" />
-        <module name="heima-leadnews-common" />
-        <module name="heima-leadnews-model" />
+        <module name="swust-leadnews-wemedia-gateway" />
+        <module name="swust-leadnews-app-gateway" />
+        <module name="swust-leadnews-common" />
+        <module name="swust-leadnews-utils" />
+        <module name="swust-leadnews-article" />
+        <module name="swust-leadnews-test" />
+        <module name="swust-leadnews-wemedia" />
+        <module name="swust-leadnews-schedule" />
+        <module name="swust-file-starter" />
+        <module name="swust-leadnews-feign-api" />
+        <module name="swust-leadnews-user" />
+        <module name="swust-leadnews-model" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
       <module name="freemarker-demo" target="1.8" />
       <module name="heima-leadnews-apis" target="1.8" />
+      <module name="heima-leadnews-test" target="1.8" />
     </bytecodeTargetLevel>
   </component>
   <component name="JavacSettings">
     <option name="ADDITIONAL_OPTIONS_OVERRIDE">
       <module name="freemarker-demo" options="-parameters" />
-      <module name="heima-file-starter" options="-parameters" />
-      <module name="heima-leadnews" options="-parameters" />
       <module name="heima-leadnews-apis" options="-parameters" />
-      <module name="heima-leadnews-app-gateway" options="-parameters" />
-      <module name="heima-leadnews-article" options="-parameters" />
-      <module name="heima-leadnews-basic" options="-parameters" />
-      <module name="heima-leadnews-common" options="-parameters" />
-      <module name="heima-leadnews-feign-api" options="-parameters" />
-      <module name="heima-leadnews-gateway" options="-parameters" />
-      <module name="heima-leadnews-model" options="-parameters" />
-      <module name="heima-leadnews-service" options="-parameters" />
       <module name="heima-leadnews-test" options="-parameters" />
-      <module name="heima-leadnews-user" options="-parameters" />
-      <module name="heima-leadnews-utils" options="-parameters" />
-      <module name="heima-leadnews-wemedia" options="-parameters" />
-      <module name="heima-leadnews-wemedia-gateway" options="-parameters" />
+      <module name="swust-file-starter" options="-parameters" />
+      <module name="swust-leadnews" options="-parameters" />
+      <module name="swust-leadnews-app-gateway" options="-parameters" />
+      <module name="swust-leadnews-article" options="-parameters" />
+      <module name="swust-leadnews-basic" options="-parameters" />
+      <module name="swust-leadnews-common" options="-parameters" />
+      <module name="swust-leadnews-feign-api" options="-parameters" />
+      <module name="swust-leadnews-gateway" options="-parameters" />
+      <module name="swust-leadnews-model" options="-parameters" />
+      <module name="swust-leadnews-schedule" options="-parameters" />
+      <module name="swust-leadnews-service" options="-parameters" />
+      <module name="swust-leadnews-test" options="-parameters" />
+      <module name="swust-leadnews-user" options="-parameters" />
+      <module name="swust-leadnews-utils" options="-parameters" />
+      <module name="swust-leadnews-wemedia" options="-parameters" />
+      <module name="swust-leadnews-wemedia-gateway" options="-parameters" />
     </option>
   </component>
 </project>

@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.swust.wemedia.mapper.WmNewsMapper">
+
+    <!-- 定义SQL片段包含公用的列 -->
+    <sql id="BaseColumns">
+        wn.id,
+        wu.`name` author,
+        wn.user_id,
+        wn.channel_id,
+        wu.name as author,
+        title,
+        content,
+        wn.`type`,
+        wc.name as channel_name,
+        labels,
+        wn.created_time,
+        submited_time,
+        wn.status,
+        publish_time,
+        reason,
+        article_id,
+        images,
+        enable
+    </sql>
+
+    <!-- 定义SQL片段包含公用的JOIN语句 -->
+    <sql id="Joins">
+        LEFT JOIN wm_user wu ON wu.ap_user_id = wn.user_id
+        LEFT JOIN wm_channel wc ON wc.id = wn.channel_id
+    </sql>
+
+    <select id="selectWithAuthorById" resultType="com.swust.model.wemedia.vos.WmNewVO"
+            parameterType="java.lang.Long">
+        SELECT
+        <include refid="BaseColumns"/>
+        FROM
+        wm_news wn
+        <include refid="Joins"/>
+        where wn.id = #{id}
+    </select>
+
+    <select id="list" resultType="com.swust.model.wemedia.vos.WmNewVO">
+        SELECT
+        <include refid="BaseColumns"/>
+        FROM wm_news wn
+        <include refid="Joins"/>
+        <where>
+            <if test="dto.status != null">
+                AND wn.status = #{dto.status}
+            </if>
+            <if test="dto.userId != null">
+                AND wn.user_id = #{dto.userId}
+            </if>
+            <if test="dto.author != null and dto.author != ''">
+                AND wu.name like CONCAT(#{dto.author},'%')
+            </if>
+            <if test="dto.channelId != null">
+                AND wn.channel_id = #{dto.channelId}
+            </if>
+            <if test="dto.beginDate != null">
+                AND wn.publish_time &gt; #{dto.beginDate}
+            </if>
+            <if test="dto.endDate != null">
+                AND wn.publish_time &lt; #{dto.endDate}
+            </if>
+        </where>
+        order by wn.created_time desc
+        limit #{offset},#{limit}
+    </select>
+    <select id="count" resultType="java.lang.Integer"
+            parameterType="com.swust.model.wemedia.dtos.WmNewsQueryDto">
+        SELECT COUNT(*)
+        FROM wm_news wn
+        <include refid="Joins"/>
+        <where>
+            <if test="status != null">
+                AND wn.status = #{status}
+            </if>
+            <if test="channelId != null">
+                AND wn.channel_id = #{channelId}
+            </if>
+            <if test="beginPubDate != null">
+                AND wn.publish_time &gt; #{beginDate}
+            </if>
+            <if test="endPubDate != null">
+                AND wn.publish_time &lt; #{endDate}
+            </if>
+        </where>
+    </select>
+</mapper>

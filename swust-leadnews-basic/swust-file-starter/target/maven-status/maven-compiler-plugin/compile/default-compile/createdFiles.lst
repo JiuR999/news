@@ -1,0 +1,5 @@
+com\swust\config\MinIOConfig.class
+com\swust\config\MinIOConfigProperties.class
+com\swust\service\impl\MinIOFileStorageService.class
+META-INF\spring-configuration-metadata.json
+com\swust\service\FileStorageService.class
