@@ -8,6 +8,7 @@ import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.swust.article.ArticleApplication;
 import com.swust.article.mapper.ApArticleContentMapper;
 import com.swust.article.mapper.ApArticleMapper;
+import com.swust.common.constants.KafkaMessageConstants;
 import com.swust.model.article.pojos.ApArticle;
 import com.swust.model.article.pojos.ApArticleContent;
 import com.swust.service.FileStorageService;
@@ -18,6 +19,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import java.io.*;
@@ -42,6 +44,14 @@ public class ArticleFreemarkerTest {
 
     @Autowired
     private ApArticleContentMapper apArticleContentMapper;
+
+    @Autowired
+    KafkaTemplate<String, String> kafkaTemplate;
+
+    @Test
+    public void testSendMsg() {
+        kafkaTemplate.send(KafkaMessageConstants.WM_NEWS_PUBLISH_TOPIC,"520");
+    }
 
     @Test
     public void createStaticUrlTest() throws Exception {

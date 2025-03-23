@@ -49,6 +49,12 @@ public class WmMaterial implements Serializable {
     @ApiModelProperty(value = "是否公开")
     private Short isPublic;
 
+    @ApiModelProperty(value = "当前状态")
+    private Short status;
+
+    @ApiModelProperty(value = "所属频道")
+    private Short channelID;
+
     @ApiModelProperty(value = "创建时间")
     @TableField(value = "created_time", fill = FieldFill.INSERT)
     private LocalDateTime createdTime;

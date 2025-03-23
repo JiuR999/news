@@ -6,10 +6,12 @@ import com.swust.apis.article.IArticleClient;
 import com.swust.apis.schedule.IScheduleClient;
 import com.swust.common.constants.ScheduleConstants;
 import com.swust.model.article.dtos.ArticleDto;
+import com.swust.model.common.dtos.IdsDto;
 import com.swust.model.common.dtos.PageResponseResult;
 import com.swust.model.common.dtos.ResponseResult;
 import com.swust.model.common.enums.AppHttpCodeEnum;
 import com.swust.model.common.enums.TaskTypeEnum;
+import com.swust.model.common.pojos.StatisticModel;
 import com.swust.model.wemedia.dtos.WmNewAuditDto;
 import com.swust.model.wemedia.dtos.WmNewsDto;
 import com.swust.model.wemedia.dtos.WmNewsQueryDto;
@@ -27,10 +29,12 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -98,7 +102,7 @@ public class WmNewsService extends ServiceImpl<WmNewsMapper, WmNews> implements 
     }
 
     @Override
-    @Transactional
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
     public ResponseResult deleteNewsById(Long id) {
         WmNewVO wmNewVO = this.baseMapper.selectWithAuthorById(id);
         //先删除中转站表里面的数据
@@ -172,4 +176,23 @@ public class WmNewsService extends ServiceImpl<WmNewsMapper, WmNews> implements 
         log.info("添加任务到延迟服务中----end");
 
     }
+
+    @Override
+    public ResponseResult deleteBatch(IdsDto ids) {
+        if (ids.getIds() == null || ids.getIds().isEmpty()) {
+            return ResponseResult.errorResult(AppHttpCodeEnum.PARAM_INVALID);
+        }
+        List<Long> errIds = new ArrayList<>();
+        for (int i = 0; i < ids.getIds().size(); i++) {
+            ResponseResult result = deleteNewsById(ids.getIds().get(i));
+            if(!((boolean) result.getData())) {
+                errIds.add(ids.getIds().get(i));
+            }
+        }
+        if(!errIds.isEmpty()) {
+            return ResponseResult.errorResult(AppHttpCodeEnum.SUCCESS, "删除失败id为：" + errIds);
+        }
+        return ResponseResult.okResult(true);
+    }
+
 }

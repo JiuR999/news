@@ -1,12 +1,9 @@
 package com.swust.app.gateway.filter;
 
 
-import com.swust.app.gateway.pojos.CurrentUser;
 import com.swust.app.gateway.util.AppJwtUtil;
-
 import io.jsonwebtoken.Claims;
 import lombok.extern.slf4j.Slf4j;
-import nonapi.io.github.classgraph.json.JSONUtils;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.cloud.gateway.filter.GatewayFilterChain;
 import org.springframework.cloud.gateway.filter.GlobalFilter;
@@ -17,8 +14,6 @@ import org.springframework.http.server.reactive.ServerHttpResponse;
 import org.springframework.stereotype.Component;
 import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Mono;
-
-import java.util.Objects;
 
 @Component
 @Slf4j
@@ -41,7 +36,7 @@ public class AuthorizeFilter implements Ordered, GlobalFilter {
         //4.判断token是否存在
         if(StringUtils.isBlank(token)){
             response.setStatusCode(HttpStatus.UNAUTHORIZED);
-            log.info("用户未登录");
+            log.info("用户未登录访问{}",request.getURI().getPath());
             return response.setComplete();
         }
 
@@ -55,7 +50,12 @@ public class AuthorizeFilter implements Ordered, GlobalFilter {
                 return response.setComplete();
             }
             String userStr = (String) claimsBody.get("current_user");
-            log.info("当前用户"+userStr+"登录");
+            // 创建新的请求对象并替换原来的请求对象
+            ServerHttpRequest newRequest = request.mutate()
+                    .header("current_user", userStr)
+                    .build();
+            exchange = exchange.mutate().request(newRequest).build();
+            log.info("用户"+userStr+"登录");
         }catch (Exception e){
             e.printStackTrace();
             response.setStatusCode(HttpStatus.UNAUTHORIZED);

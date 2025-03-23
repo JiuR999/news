@@ -25,6 +25,23 @@
         <result column="static_url" property="staticUrl"/>
     </resultMap>
 
+    <sql id="baseColumn" >
+        id,
+	    title,
+	    author_id,
+	    author_name,
+	    channel_id,
+	    channel_name,
+	    images,
+        labels,
+	    likes,
+	    collection,
+	    downloads,
+	    views,
+	    created_time,
+	    publish_time,
+	    update_time
+    </sql>
 
     <resultMap id="depMap" type="com.swust.model.article.pojos.EmpVO">
         <id column="tid" property="id"/>
@@ -34,6 +51,22 @@
             <result column="sname" property="name"/>
         </collection>
     </resultMap>
+
+    <update id="updateBatchData">
+        <!--<foreach collection="dtos" item="dto" separator=";">-->
+            <bind name="dynamicColumn" value="'`'+column+'`'"/>
+            update ap_article
+            set ${dynamicColumn} = coalesce(${dynamicColumn}, 0) + #{value}
+            where id = #{id}
+        <!--</foreach>-->
+    </update>
+
+    <update id="updateViews">
+        <bind name="dynamicColumn" value="'`' + column + '`'"/>
+        update ap_article
+        set ${dynamicColumn} = ${value}
+        where id = #{id}
+    </update>
 
     <select id="loadArticleList" resultMap="resultMap">
         SELECT aa.*
@@ -61,20 +94,90 @@
             inner join emp e on d.id = e.dep_id
     </select>
 
-    <select id="pageByContent" resultType="com.swust.model.article.pojos.ApArticle">
-        select a.*
+    <select id="pageByContent" resultType="com.swust.model.article.vos.ApArticleVO">
+        select
+        CASE
+        WHEN ac.id is NOT NULL THEN
+        1
+        ELSE
+        0
+        END AS is_collection,
+        a.*
         from (
-            select *
-            from ap_article
-            <where>
-                <if test="dto.tag != null and dto.tag != ''">
-                    channel_id = #{dto.tag}
-                </if>
-            </where>
-             ) a
-        inner join ap_article_content ac on a.id = ac.article_id
-        where match(ac.content) against(#{dto.keyWord} in boolean mode)
-        or a.title like concat('%',#{dto.keyWord},'%')
+        select
+        a1.*,
+        aac.article_id,
+        aac.content
+        from ap_article a1
+        inner join ap_article_content aac on a1.id = aac.article_id
+        <if test="dto.tag != null and dto.tag != ''">
+            and a1.channel_id = #{dto.tag}
+        </if>
+        <where>
+            <if test="dto.keyWord != null and dto.keyWord != ''">
+                match(aac.content) against(#{dto.keyWord} in boolean mode)
+                or a1.title like concat('%',#{dto.keyWord},'%')
+            </if>
+        </where>
+
+        ) a
+        left join (
+        SELECT article_id id
+        FROM ap_collection
+        WHERE user_id = #{userId}
+        ) ac
+        ON a.id = ac.id
         limit #{offset},#{dto.size}
     </select>
+
+    <select id="count" resultType="java.lang.Integer">
+        select count(a.id)
+        from (
+        select id,title
+        from ap_article
+        <where>
+            <if test="dto.tag != null and dto.tag != ''">
+                channel_id = #{dto.tag}
+            </if>
+        </where>
+        ) a
+        <if test="dto.keyWord != null and dto.keyWord != ''">
+            inner join ap_article_content ac on a.id = ac.article_id
+        </if>
+
+        <where>
+            <if test="dto.keyWord != null and dto.keyWord != ''">
+                match(ac.content) against(#{dto.keyWord} in boolean mode)
+                or a.title like concat('%',#{dto.keyWord},'%')
+            </if>
+        </where>
+    </select>
+    <select id="selectCollectionList" resultType="com.swust.model.article.vos.ApArticleVO">
+        select
+        ac.collection_time,
+        <include refid="baseColumn"/>
+        from ap_article a
+        INNER JOIN ( SELECT article_id, collection_time FROM `ap_collection` WHERE user_id = #{userId} ) ac ON a.id = ac.article_id
+    </select>
+
+    <select id="selectArticleStatsByChannel" resultType="com.swust.model.common.pojos.StatisticModel">
+        SELECT
+            channel_name NAME,
+            COUNT( channel_id )
+            VALUE
+
+        FROM
+            ap_article
+        GROUP BY
+            channel_name
+    </select>
+
+    <select id="selectArticleTop10Views" resultType="com.swust.model.common.pojos.StatisticModel">
+        SELECT title name, views value
+        FROM `ap_article`
+        WHERE views > 0
+        ORDER BY views DESC
+            LIMIT 10
+    </select>
+
 </mapper>

@@ -4,6 +4,7 @@ import com.swust.model.common.dtos.PageRequestDto;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @EqualsAndHashCode(callSuper = true)
@@ -25,8 +26,12 @@ public class WmQueryDto extends PageRequestDto {
     private String author;
 
     private Integer userId;
+    /**
+     * 文件名
+     */
+    private String fileName;
     private Integer channelId;
 
-    private LocalDateTime beginDate;
-    private LocalDateTime endDate;
+    private LocalDate beginDate;
+    private LocalDate endDate;
 }

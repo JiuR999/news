@@ -179,6 +179,7 @@ public class WmMaterialServiceImpl extends ServiceImpl<WmMaterialMapper, WmMater
             material.setIsPublic(dto.getIsPublic());
             material.setUrl(dto.getFiles().get(fileName));
             material.setUserId(user.getId());
+
             materials.add(material);
         }
 

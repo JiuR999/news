@@ -12,6 +12,7 @@
         wm.type,
         file_name,
         is_public,
+        wm.status,
         is_collection,
         wm.created_time
     </sql>
@@ -25,10 +26,12 @@
     <select id="list" resultType="com.swust.model.wemedia.vos.WmMaterialVO">
         SELECT
         <include refid="BaseColumns"/>
-        FROM wm_material wm
+        FROM wm_file wm
         <include refid="Joins"/>
         <where>
-
+            <if test="dto.fileName != null and dto.fileName != ''">
+                AND wm.file_name like CONCAT('%',#{dto.fileName},'%')
+            </if>
             <if test="dto.author != null and dto.author != ''">
                 AND wu.name like CONCAT(#{dto.author},'%')
             </if>
@@ -36,10 +39,10 @@
                 AND wm.channel_id = #{dto.channelId}
             </if>
             <if test="dto.beginDate != null">
-                AND wm.publish_time &gt; #{dto.beginDate}
+                AND wm.created_time &gt; #{dto.beginDate}
             </if>
             <if test="dto.endDate != null">
-                AND wm.publish_time &lt; #{dto.endDate}
+                AND wm.created_time &lt; #{dto.endDate}
             </if>
         </where>
         order by wm.created_time desc

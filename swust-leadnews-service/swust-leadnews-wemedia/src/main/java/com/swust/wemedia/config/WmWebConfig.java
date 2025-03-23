@@ -11,7 +11,9 @@ public class WmWebConfig implements WebMvcConfigurer {
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(new WmTokenInterceptor())
-                .addPathPatterns("/**");
+                .addPathPatterns("/**")
+                .excludePathPatterns("/api/v1/news/update"
+                ,"/api/v1/material/upload");
     }
 
 }

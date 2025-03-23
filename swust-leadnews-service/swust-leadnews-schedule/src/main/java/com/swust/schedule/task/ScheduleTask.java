@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.swust.apis.article.IArticleClient;
 import com.swust.apis.schedule.IScheduleClient;
+import com.swust.common.constants.CacheConstants;
 import com.swust.common.constants.ScheduleConstants;
 import com.swust.common.redis.CacheService;
 import com.swust.model.article.dtos.ArticleDto;
@@ -15,11 +16,13 @@ import com.swust.schedule.mapper.TaskinfoMapper;
 import com.swust.utils.common.ProtostuffUtil;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.ZSetOperations;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
@@ -39,8 +42,6 @@ public class ScheduleTask {
      */
     @Scheduled(cron = "0 */1 * * * ?")
     public void refresh() {
-        System.out.println(System.currentTimeMillis() / 1000 + "执行了定时任务");
-
         // 获取所有未来数据集合的key值
         Set<String> futureKeys = cacheService.scan(ScheduleConstants.FUTURE + "*");// future_*
         for (String futureKey : futureKeys) { // future_250_250
@@ -58,19 +59,35 @@ public class ScheduleTask {
 
     /**
      * 定时发布资料任务
+     * 定时从延迟任务队列拉取
      */
-    @Scheduled(fixedRate = 5000)
+    @Scheduled(fixedRate = 8000)
     public void publish() {
         ResponseResult responseResult = scheduleClient.poll(TaskTypeEnum.NEWS_PUBLISH_TIME.getTaskType(), TaskTypeEnum.NEWS_PUBLISH_TIME.getPriority());
-        if(responseResult.getCode().equals(200) && responseResult.getData() != null){
+        if (responseResult.getCode().equals(200) && responseResult.getData() != null) {
             String json_str = JSON.toJSONString(responseResult.getData());
             Task task = JSON.parseObject(json_str, Task.class);
             byte[] parameters = task.getParameters();
+
             ArticleDto dto = ProtostuffUtil.deserialize(parameters, ArticleDto.class);
-            System.out.println(dto.getTitle()+"-----------"+"发布");
-            articleClient.saveArticle(dto);
+            System.out.println(dto.getTitle() + "-----------" + "准备发布");
+            //可能发生异常 续时
+            try {
+                ResponseResult result = articleClient.saveArticle(dto);
+                boolean published = (boolean) result.getData();
+                if (!published) {
+                    System.err.println(dto.getTitle() + "-----------" + "发布失败");
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+                task.setExecuteTime(LocalDateTime.now().plusMinutes(5).atZone(ZoneId.systemDefault()).toInstant().toEpochMilli());
+                ResponseResult result = scheduleClient.addTask(task);
+                System.out.println(result.getData());
+                if (result.getCode().equals(200) && result.getData() != null) {
+                    System.err.println(dto.getTitle() + "-----------" + "发布失败,稍后重新发布！");
+                }
+            }
         }
     }
-
 
 }

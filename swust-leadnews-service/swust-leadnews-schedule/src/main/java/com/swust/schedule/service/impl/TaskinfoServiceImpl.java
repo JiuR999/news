@@ -47,14 +47,15 @@ public class TaskinfoServiceImpl extends ServiceImpl<TaskinfoMapper, Taskinfo> i
     CacheService cacheService;
 
 
-    @Scheduled(cron = "0 */5 * * * ?")
+    @Scheduled(cron = "0 */1 * * * ?")
     @PostConstruct
     public void reloadData() {
         clearCache();
-        Calendar calendar = Calendar.getInstance();
-        calendar.add(Calendar.MINUTE, 5);
+//        Calendar calendar = Calendar.getInstance();
+//        calendar.add(Calendar.MINUTE, 5);
+        LocalDateTime futrueTime = LocalDateTime.now().plusMinutes(5);
         //查看小于未来5分钟的所有任务
-        List<Taskinfo> allTasks = this.baseMapper.selectList(Wrappers.<Taskinfo>lambdaQuery().lt(Taskinfo::getExecuteTime, calendar.getTime()));
+        List<Taskinfo> allTasks = this.baseMapper.selectList(Wrappers.<Taskinfo>lambdaQuery().lt(Taskinfo::getExecuteTime, futrueTime));
         if (allTasks != null && !allTasks.isEmpty()) {
             for (Taskinfo taskinfo : allTasks) {
                 Task task = new Task();
@@ -122,7 +123,6 @@ public class TaskinfoServiceImpl extends ServiceImpl<TaskinfoMapper, Taskinfo> i
         taskinfo.setParameters(task.getParameters());
         taskinfo.setExecuteTime(LocalDateTime.ofInstant(Instant.ofEpochMilli(task.getExecuteTime()), ZoneId.systemDefault()));
         flag = this.save(taskinfo);
-
         task.setTaskId(taskinfo.getTaskId());
         //插入任务日志
         TaskinfoLogs taskinfoLogs = new TaskinfoLogs();
@@ -149,7 +149,6 @@ public class TaskinfoServiceImpl extends ServiceImpl<TaskinfoMapper, Taskinfo> i
         try {
             //删除任务
             this.removeById(taskId);
-
             TaskinfoLogs taskinfoLogs = logsMapper.selectById(taskId);
             taskinfoLogs.setStatus(status);
             logsMapper.updateById(taskinfoLogs);

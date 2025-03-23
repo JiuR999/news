@@ -1,5 +1,6 @@
 package com.swust.wemedia.mapper;
 
+import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.swust.model.wemedia.pojos.WmNewsStatistics;
 
 /**

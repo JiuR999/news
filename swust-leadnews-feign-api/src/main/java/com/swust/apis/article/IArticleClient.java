@@ -1,6 +1,7 @@
 package com.swust.apis.article;
 
 import com.swust.apis.article.fallback.IArticleClientFallback;
+import com.swust.config.FeignRequestInterceptor;
 import com.swust.model.article.dtos.ArticleDto;
 import com.swust.model.common.dtos.ResponseResult;
 import org.springframework.cloud.openfeign.FeignClient;

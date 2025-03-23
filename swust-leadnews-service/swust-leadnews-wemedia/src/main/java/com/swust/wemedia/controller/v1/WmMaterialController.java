@@ -1,5 +1,6 @@
 package com.swust.wemedia.controller.v1;
 
+import com.swust.model.common.dtos.IdsDto;
 import com.swust.model.common.dtos.ResponseResult;
 import com.swust.model.wemedia.dtos.WmMateriaDto;
 import com.swust.model.wemedia.dtos.WmQueryDto;
@@ -76,11 +77,17 @@ public class WmMaterialController {
         return wmMaterialService.add(dto);
     }
 
-    @GetMapping("/del_picture/{id}")
+    @GetMapping("/del/{id}")
     @ApiOperation("删除素材文件")
     @ApiImplicitParam(name = "id", value = "素材ID", required = true, paramType = "path")
     public ResponseResult delete(@PathVariable Integer id) {
         return wmMaterialService.delete(id);
+    }
+
+    @PostMapping("/deleteBatch")
+    @ApiOperation("根据ids删除素材")
+    public ResponseResult deleteBatch(@RequestBody IdsDto ids) {
+        return ResponseResult.okResult(wmMaterialService.removeBatchByIds(ids.getIds()));
     }
 
     @GetMapping("/collect/{id}")

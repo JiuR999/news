@@ -6,7 +6,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.swust.apis.wmuser.IWmUserClient;
+import com.swust.apis.wemdia.IWmNewsClient;
 import com.swust.common.utils.SaltGenerator;
 import com.swust.model.common.dtos.ResponseResult;
 import com.swust.model.common.enums.AppHttpCodeEnum;
@@ -21,7 +21,6 @@ import com.swust.user.mapper.RoleMapper;
 import com.swust.user.mapper.UserRoleMapper;
 import com.swust.user.service.ApUserService;
 import com.swust.utils.common.AppJwtUtil;
-import com.swust.utils.common.WmThreadLocalUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpStatus;
@@ -45,7 +44,7 @@ public class ApUserServiceImpl extends ServiceImpl<ApUserMapper, ApUser> impleme
     @Autowired
     UserRoleMapper userRoleMapper;
     @Autowired
-    IWmUserClient wmUserClient;
+    IWmNewsClient wmNewsClient;
     @Autowired
     RoleMapper roleMapper;
     @Autowired
@@ -164,7 +163,7 @@ public class ApUserServiceImpl extends ServiceImpl<ApUserMapper, ApUser> impleme
         wmUser.setName(userDto.getName());
         wmUser.setPhone(userDto.getPhone());
 //        wmUser.setNickname(userDto.get);
-        ResponseResult addedUser = wmUserClient.addUser(wmUser);
+        ResponseResult addedUser = wmNewsClient.addUser(wmUser);
         return saved && addedUser.getCode() == HttpStatus.SC_OK;
     }
 

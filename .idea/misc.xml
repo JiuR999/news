@@ -12,11 +12,13 @@
         <option value="$PROJECT_DIR$/swust-leadnews-model/pom.xml" />
         <option value="$PROJECT_DIR$/swust-leadnews-gateway/pom.xml" />
         <option value="$PROJECT_DIR$/swust-leadnews-service/swust-leadnews-schedule/pom.xml" />
+        <option value="$PROJECT_DIR$/swust-leadnews-service/swust-leadnews-statistic/pom.xml" />
       </list>
     </option>
     <option name="ignoredFiles">
       <set>
         <option value="$PROJECT_DIR$/swust-leadnews-schedule/pom.xml" />
+        <option value="$PROJECT_DIR$/swust-leadnews-service/swust-leadnews-statistic/pom.xml" />
       </set>
     </option>
   </component>

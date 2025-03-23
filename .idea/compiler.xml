@@ -7,16 +7,16 @@
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
-        <module name="swust-leadnews-wemedia-gateway" />
-        <module name="swust-leadnews-app-gateway" />
-        <module name="swust-leadnews-common" />
         <module name="swust-leadnews-utils" />
         <module name="swust-leadnews-article" />
         <module name="swust-leadnews-test" />
-        <module name="swust-leadnews-wemedia" />
-        <module name="swust-leadnews-schedule" />
         <module name="swust-file-starter" />
         <module name="swust-leadnews-feign-api" />
+        <module name="swust-leadnews-wemedia-gateway" />
+        <module name="swust-leadnews-app-gateway" />
+        <module name="swust-leadnews-common" />
+        <module name="swust-leadnews-wemedia" />
+        <module name="swust-leadnews-schedule" />
         <module name="swust-leadnews-user" />
         <module name="swust-leadnews-model" />
       </profile>
@@ -25,6 +25,7 @@
       <module name="freemarker-demo" target="1.8" />
       <module name="heima-leadnews-apis" target="1.8" />
       <module name="heima-leadnews-test" target="1.8" />
+      <module name="swust-leadnews-statistic" target="17" />
     </bytecodeTargetLevel>
   </component>
   <component name="JavacSettings">
@@ -43,6 +44,7 @@
       <module name="swust-leadnews-model" options="-parameters" />
       <module name="swust-leadnews-schedule" options="-parameters" />
       <module name="swust-leadnews-service" options="-parameters" />
+      <module name="swust-leadnews-statistic" options="-parameters" />
       <module name="swust-leadnews-test" options="-parameters" />
       <module name="swust-leadnews-user" options="-parameters" />
       <module name="swust-leadnews-utils" options="-parameters" />

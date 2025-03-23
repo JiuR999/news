@@ -5,14 +5,15 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Data
 @EqualsAndHashCode(callSuper=false)
 public class WmNewsQueryDto extends PageRequestDto {
-    private LocalDateTime beginDate;
+    private LocalDate beginDate;
 
-    private LocalDateTime endDate;
+    private LocalDate endDate;
 
     private String keyword;
 

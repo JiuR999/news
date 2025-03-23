@@ -1,11 +1,13 @@
 package com.swust.user.controller.v1;
 
+import com.swust.model.common.dtos.IdsDto;
 import com.swust.model.common.dtos.ResponseResult;
 import com.swust.model.user.dtos.LoginDto;
 import com.swust.model.user.dtos.UserDto;
 import com.swust.model.user.pojos.ApUser;
 import com.swust.user.service.ApUserService;
 import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -65,5 +67,11 @@ public class ApUserController {
     @DeleteMapping("/delete/{id}")
     public ResponseResult update(@PathVariable Integer id) {
         return ResponseResult.okResult(userService.removeById(id));
+    }
+
+    @PostMapping("/deleteBatch")
+    @ApiOperation("根据ids删除用户")
+    public ResponseResult deleteBatch(@RequestBody IdsDto ids) {
+        return ResponseResult.okResult(userService.removeBatchByIds(ids.getIds()));
     }
 }

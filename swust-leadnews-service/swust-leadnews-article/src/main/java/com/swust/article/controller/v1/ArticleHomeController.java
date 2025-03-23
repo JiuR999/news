@@ -6,6 +6,7 @@ import com.swust.common.constants.ArticleConstants;
 import com.swust.model.article.dtos.ArticleDto;
 import com.swust.model.article.dtos.ArticleHomeDto;
 import com.swust.model.article.pojos.ApArticle;
+import com.swust.model.common.dtos.IdsDto;
 import com.swust.model.common.dtos.ResponseResult;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -16,14 +17,14 @@ import javax.servlet.http.HttpServletResponse;
 
 @RestController
 @RequestMapping("/api/v1/article")
-@Api(value = "文章列表接口")
+@Api(value = "文章相关接口")
 public class ArticleHomeController {
 
     @Autowired
-    private ArticleService articleService;
+    ArticleService articleService;
 
     @GetMapping("/list")
-    public ResponseResult list(){
+    public ResponseResult list() {
         LambdaQueryWrapper<ApArticle> wrapper = new LambdaQueryWrapper<ApArticle>()
                 .eq(ApArticle::getChannelId, 1);
         return ResponseResult.okResult(articleService.list(wrapper));
@@ -31,13 +32,13 @@ public class ArticleHomeController {
 
     //Golang 发起请求时 可以不传递 也能调用shouledBindJson进行参数绑定
     @PostMapping("/page")
-    public ResponseResult page(@RequestBody(required = false) ArticleHomeDto dto){
+    public ResponseResult page(@RequestBody(required = false) ArticleHomeDto dto) {
         return ResponseResult.okResult(articleService.page(dto));
     }
 
     @PostMapping("/load")
     @ApiOperation(value = "加载文章列表")
-    public ResponseResult load(@RequestBody ArticleHomeDto articleHomeDto){
+    public ResponseResult load(@RequestBody ArticleHomeDto articleHomeDto) {
         articleService.loadArticle(articleHomeDto, ArticleConstants.LOADTYPE_LOAD_MORE);
         return ResponseResult.okResult(articleService.list());
     }
@@ -45,13 +46,13 @@ public class ArticleHomeController {
     @PostMapping("/loadmore")
     @ApiOperation("加载更多")
     public ResponseResult loadMore(@RequestBody ArticleHomeDto dto) {
-        return ResponseResult.okResult(articleService.loadArticle(dto,ArticleConstants.LOADTYPE_LOAD_MORE));
+        return ResponseResult.okResult(articleService.loadArticle(dto, ArticleConstants.LOADTYPE_LOAD_MORE));
     }
 
     @PostMapping("/loadnew")
     @ApiOperation("刷新")
     public ResponseResult loadNew(@RequestBody ArticleHomeDto dto) {
-        return ResponseResult.okResult(articleService.loadArticle(dto,ArticleConstants.LOADTYPE_LOAD_NEW));
+        return ResponseResult.okResult(articleService.loadArticle(dto, ArticleConstants.LOADTYPE_LOAD_NEW));
     }
 
     @GetMapping("/type/list")
@@ -78,10 +79,58 @@ public class ArticleHomeController {
         return ResponseResult.okResult(articleService.deleteById(id));
     }
 
+    @PostMapping("/deleteBatch")
+    @ApiOperation("根据ids删除资料")
+    public ResponseResult deleteBatch(@RequestBody IdsDto ids) {
+        return ResponseResult.okResult(articleService.deleteBatch(ids));
+    }
+
     @GetMapping("/download/{id}")
     @ApiOperation("根据id下载资料")
     public void downLoad(@PathVariable long id, HttpServletResponse response) {
         articleService.download(id, response);
+    }
+
+    @PostMapping("/addViews/{articleId}")
+    @ApiOperation("根据id增加文章浏览量")
+    public ResponseResult addViews(@RequestHeader("current_user") String userInfo, @PathVariable Long articleId) {
+        return ResponseResult.okResult(articleService.addViews(userInfo, articleId));
+    }
+
+    @PostMapping("/collect/{articleId}")
+    @ApiOperation("收藏文章")
+    public ResponseResult collect(@PathVariable Long articleId) {
+        return ResponseResult.okResult(articleService.collect(articleId));
+    }
+
+    @DeleteMapping("/cancelCollect/{articleId}")
+    @ApiOperation("取消收藏文章")
+    public ResponseResult cancelCollect(@PathVariable Long articleId) {
+        return ResponseResult.okResult(articleService.cancelCollect(articleId));
+    }
+
+    @GetMapping("/myCollections")
+    @ApiOperation("我的收藏文章")
+    public ResponseResult myCollections() {
+        return ResponseResult.okResult(articleService.myCollections());
+    }
+
+    /**
+     * 统计各分区的文章数
+     * @return
+     */
+    @GetMapping("/stats/by-channel")
+    public ResponseResult getArticleStatsByChannel() {
+        return ResponseResult.okResult(articleService.getArticleStatsByChannel());
+    }
+
+    /**
+     * 统计热门文章top5
+     * @return
+     */
+    @GetMapping("/stats/top10Views")
+    public ResponseResult getArticleTop10Views() {
+        return ResponseResult.okResult(articleService.getArticleTop10Views());
     }
 
     @GetMapping("/dep")
