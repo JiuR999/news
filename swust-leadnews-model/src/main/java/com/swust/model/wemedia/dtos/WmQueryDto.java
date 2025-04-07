@@ -34,4 +34,8 @@ public class WmQueryDto extends PageRequestDto {
 
     private LocalDate beginDate;
     private LocalDate endDate;
+    /**
+     * 当前状态
+     */
+    private Short status;
 }

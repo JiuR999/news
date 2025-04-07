@@ -3,8 +3,8 @@ package com.swust.model.wemedia.dtos;
 import lombok.Data;
 
 @Data
-public class WmNewAuditDto {
-    //文章id
+public class WmAuditDto {
+    //资料id
     private Long id;
     //审核意见
     private Short status;

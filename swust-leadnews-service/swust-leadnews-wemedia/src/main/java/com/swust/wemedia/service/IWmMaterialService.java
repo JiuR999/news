@@ -2,6 +2,7 @@ package com.swust.wemedia.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.swust.model.common.dtos.ResponseResult;
+import com.swust.model.wemedia.dtos.WmAuditDto;
 import com.swust.model.wemedia.dtos.WmMateriaDto;
 import com.swust.model.wemedia.dtos.WmQueryDto;
 import com.swust.model.wemedia.pojos.WmMaterial;
@@ -29,4 +30,6 @@ public interface IWmMaterialService extends IService<WmMaterial> {
     ResponseResult collect(Integer id);
 
     ResponseResult add(WmMateriaDto dto);
+
+    ResponseResult audit(WmAuditDto dto);
 }

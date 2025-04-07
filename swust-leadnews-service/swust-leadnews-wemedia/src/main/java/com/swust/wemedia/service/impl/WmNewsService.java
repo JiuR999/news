@@ -4,15 +4,13 @@ import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.swust.apis.article.IArticleClient;
 import com.swust.apis.schedule.IScheduleClient;
-import com.swust.common.constants.ScheduleConstants;
 import com.swust.model.article.dtos.ArticleDto;
 import com.swust.model.common.dtos.IdsDto;
 import com.swust.model.common.dtos.PageResponseResult;
 import com.swust.model.common.dtos.ResponseResult;
 import com.swust.model.common.enums.AppHttpCodeEnum;
 import com.swust.model.common.enums.TaskTypeEnum;
-import com.swust.model.common.pojos.StatisticModel;
-import com.swust.model.wemedia.dtos.WmNewAuditDto;
+import com.swust.model.wemedia.dtos.WmAuditDto;
 import com.swust.model.wemedia.dtos.WmNewsDto;
 import com.swust.model.wemedia.dtos.WmNewsQueryDto;
 import com.swust.model.wemedia.pojos.WmNews;
@@ -24,7 +22,6 @@ import com.swust.utils.common.WmThreadLocalUtil;
 import com.swust.wemedia.mapper.WmNewsMapper;
 import com.swust.wemedia.service.IWmNewsService;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.http.HttpStatus;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
@@ -92,6 +89,11 @@ public class WmNewsService extends ServiceImpl<WmNewsMapper, WmNews> implements 
             wmNews.setSubmitedTime(LocalDateTime.now());
         }
         boolean saved = this.saveOrUpdate(wmNews);
+        //提交到审核队列
+        if (saved) {
+            //加入队列 随机时间执行
+            addNewsToTask(wmNews, TaskTypeEnum.NEWS_AUDIT_TIME, LocalDateTime.now().plusSeconds(30));
+        }
         return ResponseResult.okResult(saved);
     }
 
@@ -118,20 +120,27 @@ public class WmNewsService extends ServiceImpl<WmNewsMapper, WmNews> implements 
 
     @Override
     @Transactional
-    public ResponseResult audit(WmNewAuditDto dto) {
+    public ResponseResult audit(WmAuditDto dto) {
         if (dto.getId() == null || dto.getId() == 0) {
             return ResponseResult.errorResult(AppHttpCodeEnum.PARAM_INVALID);
+        }
+        //如果status = 3 说明机器审核不通过 转人工审核
+        Short status;
+        if (dto.getStatus() == 3) {
+            status = dto.getStatus();
+        } else {
+            status = (short) (dto.getStatus() == 1 ? 8 : 2);
         }
         //修改wm数据库 更新状态
         //如果审核不通过 加上拒绝理由
         UpdateWrapper<WmNews> updateWrapper = new UpdateWrapper<>();
-        updateWrapper.set(dto.getStatus() != null, "status", dto.getStatus() == 1 ? 8 : 2)
+        updateWrapper.set("status", status)
                 .set(dto.getReason() != null, "reason", dto.getReason())
                 .eq(dto.getId() != null, "id", dto.getId());
         boolean updated = this.update(updateWrapper);
         //审核拒绝
-        if (dto.getStatus() == 0) {
-            return ResponseResult.okResult(AppHttpCodeEnum.SUCCESS);
+        if (dto.getStatus() == 0 || dto.getStatus() == 3) {
+            return ResponseResult.okResult("审核失败！");
         }
         //判断当前状态是否已经审核
 
@@ -148,7 +157,7 @@ public class WmNewsService extends ServiceImpl<WmNewsMapper, WmNews> implements 
         articleDto.setChannelName(wmNewVO.getChannelName());
         articleDto.setContent(wmNewVO.getContent());
         //增加发布任务
-        addNewsToTask(articleDto, LocalDateTime.now().plusSeconds(1));
+        addNewsToTask(articleDto, TaskTypeEnum.NEWS_PUBLISH_TIME, LocalDateTime.now().plusSeconds(1));
         return ResponseResult.okResult("审核成功,等待发布！");
     }
 
@@ -158,16 +167,15 @@ public class WmNewsService extends ServiceImpl<WmNewsMapper, WmNews> implements 
      * @param dto         文章数据
      * @param publishTime 发布的时间  可以做为任务的执行时间
      */
-    @Override
     @Async
-    public void addNewsToTask(ArticleDto dto, LocalDateTime publishTime) {
+    public <T> void addNewsToTask(T dto, TaskTypeEnum typeEnum, LocalDateTime publishTime) {
 
         log.info("添加任务到延迟服务中----begin");
 
         Task task = new Task();
         task.setExecuteTime(publishTime.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli());
-        task.setTaskType(TaskTypeEnum.NEWS_PUBLISH_TIME.getTaskType());
-        task.setPriority(TaskTypeEnum.NEWS_PUBLISH_TIME.getPriority());
+        task.setTaskType(typeEnum.getTaskType());
+        task.setPriority(typeEnum.getPriority());
 
         task.setParameters(ProtostuffUtil.serialize(dto));
 

@@ -1,0 +1,6 @@
+com\swust\article\mapper\ApArticleMapper.class
+com\swust\article\controller\v1\ArticleHomeController.class
+com\swust\article\mapper\ApArticleContentMapper.class
+com\swust\article\service\ArticleService.class
+com\swust\article\service\impl\ArticleServiceImpl.class
+com\swust\article\ArticleApplication.class

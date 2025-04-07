@@ -1,0 +1,3 @@
+com\swust\apis\wmuser\IWmUserClient.class
+com\swust\apis\article\IArticleClient.class
+com\swust\apis\article\fallback\IArticleClientFallback.class

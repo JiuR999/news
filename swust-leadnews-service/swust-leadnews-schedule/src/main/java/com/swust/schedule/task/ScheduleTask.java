@@ -1,29 +1,26 @@
 package com.swust.schedule.task;
 
 import com.alibaba.fastjson.JSON;
-import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.swust.apis.article.IArticleClient;
 import com.swust.apis.schedule.IScheduleClient;
-import com.swust.common.constants.CacheConstants;
+import com.swust.apis.wemdia.IWmNewsClient;
 import com.swust.common.constants.ScheduleConstants;
 import com.swust.common.redis.CacheService;
 import com.swust.model.article.dtos.ArticleDto;
 import com.swust.model.common.dtos.ResponseResult;
 import com.swust.model.common.enums.TaskTypeEnum;
 import com.swust.model.schedule.dtos.Task;
-import com.swust.model.schedule.pojos.Taskinfo;
-import com.swust.schedule.mapper.TaskinfoMapper;
+import com.swust.model.wemedia.dtos.WmAuditDto;
+import com.swust.model.wemedia.pojos.WmNews;
 import com.swust.utils.common.ProtostuffUtil;
-import org.springframework.beans.BeanUtils;
+import com.swust.utils.common.SensitiveWordUtil;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.redis.core.ZSetOperations;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
 import java.time.ZoneId;
-import java.util.Iterator;
-import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 @Component
@@ -36,6 +33,9 @@ public class ScheduleTask {
 
     @Autowired
     IArticleClient articleClient;
+
+    @Autowired
+    IWmNewsClient wmNewsClient;
 
     /**
      * 定时刷新任务队列
@@ -85,6 +85,54 @@ public class ScheduleTask {
                 System.out.println(result.getData());
                 if (result.getCode().equals(200) && result.getData() != null) {
                     System.err.println(dto.getTitle() + "-----------" + "发布失败,稍后重新发布！");
+                }
+            }
+        }
+    }
+
+    /**
+     * 定时审核资料任务
+     * 定时从延迟任务队列拉取
+     */
+    @Scheduled(fixedRate = 5000)
+    public void audit() {
+        ResponseResult responseResult = scheduleClient.poll(TaskTypeEnum.NEWS_AUDIT_TIME.getTaskType(), TaskTypeEnum.NEWS_AUDIT_TIME.getPriority());
+        if (responseResult.getCode().equals(200) && responseResult.getData() != null) {
+            String json_str = JSON.toJSONString(responseResult.getData());
+            Task task = JSON.parseObject(json_str, Task.class);
+            byte[] parameters = task.getParameters();
+            //序列化资料类型
+            WmNews news = ProtostuffUtil.deserialize(parameters, WmNews.class);
+            System.out.println(news.getTitle() + "-----------" + "准备审核");
+            WmAuditDto newsDto = new WmAuditDto();
+            newsDto.setId(Long.valueOf(news.getId()));
+            //可能发生异常 续时
+            try {
+                //调用审核方法 自动审核
+                System.out.println("审核：" + news.getContent());
+                Map<String, Integer> matchWords = SensitiveWordUtil.matchWords(news.getContent());
+                if (!matchWords.isEmpty()) {
+                    System.out.println("匹配到敏感词" + matchWords);
+                    //审核不通过 调用更新 回传不通过理由
+                    newsDto.setStatus((short) 3);
+                    newsDto.setReason("文章包含敏感词:" + matchWords);
+                } else {
+                    //审核通过 调用更新
+                    newsDto.setStatus((short) 1);
+                }
+                ResponseResult result = wmNewsClient.audit(newsDto);
+
+                String audited = (String) result.getData();
+                if (audited.contains("审核失败")) {
+                    System.err.println(news.getTitle() + "-----------" + "审核失败");
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+                task.setExecuteTime(LocalDateTime.now().plusMinutes(5).atZone(ZoneId.systemDefault()).toInstant().toEpochMilli());
+                ResponseResult result = scheduleClient.addTask(task);
+                System.out.println(result.getData());
+                if (result.getCode().equals(200) && result.getData() != null) {
+                    System.err.println(news.getTitle() + "-----------" + "审核失败,稍后人工审核！");
                 }
             }
         }

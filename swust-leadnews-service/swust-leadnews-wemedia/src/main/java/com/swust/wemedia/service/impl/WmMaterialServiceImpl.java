@@ -8,6 +8,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.swust.model.common.dtos.PageResponseResult;
 import com.swust.model.common.dtos.ResponseResult;
 import com.swust.model.common.enums.AppHttpCodeEnum;
+import com.swust.model.wemedia.dtos.WmAuditDto;
 import com.swust.model.wemedia.dtos.WmMateriaDto;
 import com.swust.model.wemedia.dtos.WmQueryDto;
 import com.swust.model.wemedia.pojos.WmMaterial;
@@ -18,6 +19,7 @@ import com.swust.utils.common.WmThreadLocalUtil;
 import com.swust.wemedia.mapper.WmMaterialMapper;
 import com.swust.wemedia.service.IWmMaterialService;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.stereotype.Service;
@@ -184,5 +186,17 @@ public class WmMaterialServiceImpl extends ServiceImpl<WmMaterialMapper, WmMater
         }
 
         return ResponseResult.okResult(this.saveBatch(materials));
+    }
+
+    @Override
+    public ResponseResult audit(WmAuditDto dto) {
+        WmMaterial material = new WmMaterial();
+        material.setId(Math.toIntExact(dto.getId()));
+        material.setStatus(dto.getStatus() == 1 ? (short) 9 : (short) 2);
+        if(!StringUtils.isBlank(dto.getReason())) {
+            material.setReason(dto.getReason());
+        }
+        int updated = this.baseMapper.updateById(material);
+        return ResponseResult.okResult(updated);
     }
 }

@@ -5,7 +5,7 @@ import java.util.*;
 
 public class SensitiveWordUtil {
 
-    public static Map<String, Object> dictionaryMap = new HashMap<>();
+    private static Map<String, Object> dictionaryMap = new HashMap<>();
 
 
     /**
@@ -18,7 +18,6 @@ public class SensitiveWordUtil {
             System.out.println("敏感词列表不能为空");
             return ;
         }
-
         // map初始长度words.size()，整个字典库的入口字数(小于words.size()，因为不同的词可能会有相同的首字)
         Map<String, Object> map = new HashMap<>(words.size());
         // 遍历过程中当前层次的数据
@@ -47,8 +46,11 @@ public class SensitiveWordUtil {
                 }
             }
         }
-
         dictionaryMap = map;
+    }
+
+    public static Map<String, Object> getDictionaryMap() {
+        return dictionaryMap;
     }
 
     /**

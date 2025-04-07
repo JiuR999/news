@@ -13,7 +13,9 @@ public class WmWebConfig implements WebMvcConfigurer {
         registry.addInterceptor(new WmTokenInterceptor())
                 .addPathPatterns("/**")
                 .excludePathPatterns("/api/v1/news/update"
-                ,"/api/v1/material/upload");
+                        , "/api/v1/material/upload"
+                        , "/api/v1/news/audit"
+                        , "/api/v1/user/add");
     }
 
 }

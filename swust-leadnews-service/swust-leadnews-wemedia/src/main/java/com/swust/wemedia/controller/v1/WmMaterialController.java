@@ -3,6 +3,7 @@ package com.swust.wemedia.controller.v1;
 import com.swust.model.common.dtos.IdsDto;
 import com.swust.model.common.dtos.ResponseResult;
 import com.swust.model.wemedia.dtos.WmMateriaDto;
+import com.swust.model.wemedia.dtos.WmAuditDto;
 import com.swust.model.wemedia.dtos.WmQueryDto;
 import com.swust.wemedia.service.IWmMaterialService;
 import io.swagger.annotations.Api;
@@ -95,5 +96,11 @@ public class WmMaterialController {
     @ApiImplicitParam(name = "id", value = "素材ID", required = true, paramType = "path")
     public ResponseResult collect(@PathVariable Integer id) {
         return wmMaterialService.collect(id);
+    }
+
+    @PostMapping("/audit")
+    @ApiOperation("审核文件")
+    public ResponseResult audit(@RequestBody WmAuditDto dto) {
+        return wmMaterialService.audit(dto);
     }
 }

@@ -52,6 +52,9 @@ public class WmMaterial implements Serializable {
     @ApiModelProperty(value = "当前状态")
     private Short status;
 
+    @ApiModelProperty(value = "审核理由")
+    private String reason;
+
     @ApiModelProperty(value = "所属频道")
     private Short channelID;
 

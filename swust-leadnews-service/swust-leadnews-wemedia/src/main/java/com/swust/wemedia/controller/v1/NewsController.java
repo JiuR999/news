@@ -2,7 +2,7 @@ package com.swust.wemedia.controller.v1;
 
 import com.swust.model.common.dtos.IdsDto;
 import com.swust.model.common.dtos.ResponseResult;
-import com.swust.model.wemedia.dtos.WmNewAuditDto;
+import com.swust.model.wemedia.dtos.WmAuditDto;
 import com.swust.model.wemedia.dtos.WmNewsDto;
 import com.swust.model.wemedia.dtos.WmNewsQueryDto;
 import com.swust.model.wemedia.pojos.WmNews;
@@ -32,7 +32,7 @@ public class NewsController {
 
     @PostMapping("/audit")
     @ApiOperation("审核文章")
-    public ResponseResult audit(@RequestBody WmNewAuditDto dto) {
+    public ResponseResult audit(@RequestBody WmAuditDto dto) {
         return wmNewsService.audit(dto);
     }
 
