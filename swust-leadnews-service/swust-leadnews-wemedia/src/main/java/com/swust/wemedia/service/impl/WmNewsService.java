@@ -161,6 +161,26 @@ public class WmNewsService extends ServiceImpl<WmNewsMapper, WmNews> implements 
         return ResponseResult.okResult("审核成功,等待发布！");
     }
 
+
+    @Override
+    public ResponseResult deleteBatch(IdsDto ids) {
+        if (ids.getIds() == null || ids.getIds().isEmpty()) {
+            return ResponseResult.errorResult(AppHttpCodeEnum.PARAM_INVALID);
+        }
+        List<Long> errIds = new ArrayList<>();
+        for (int i = 0; i < ids.getIds().size(); i++) {
+            ResponseResult result = deleteNewsById(ids.getIds().get(i));
+            if (!((boolean) result.getData())) {
+                errIds.add(ids.getIds().get(i));
+            }
+        }
+        if (!errIds.isEmpty()) {
+            return ResponseResult.errorResult(AppHttpCodeEnum.SUCCESS, "删除失败id为：" + errIds);
+        }
+        return ResponseResult.okResult(true);
+    }
+
+
     /**
      * 添加任务到延迟队列中
      *
@@ -184,23 +204,4 @@ public class WmNewsService extends ServiceImpl<WmNewsMapper, WmNews> implements 
         log.info("添加任务到延迟服务中----end");
 
     }
-
-    @Override
-    public ResponseResult deleteBatch(IdsDto ids) {
-        if (ids.getIds() == null || ids.getIds().isEmpty()) {
-            return ResponseResult.errorResult(AppHttpCodeEnum.PARAM_INVALID);
-        }
-        List<Long> errIds = new ArrayList<>();
-        for (int i = 0; i < ids.getIds().size(); i++) {
-            ResponseResult result = deleteNewsById(ids.getIds().get(i));
-            if(!((boolean) result.getData())) {
-                errIds.add(ids.getIds().get(i));
-            }
-        }
-        if(!errIds.isEmpty()) {
-            return ResponseResult.errorResult(AppHttpCodeEnum.SUCCESS, "删除失败id为：" + errIds);
-        }
-        return ResponseResult.okResult(true);
-    }
-
 }

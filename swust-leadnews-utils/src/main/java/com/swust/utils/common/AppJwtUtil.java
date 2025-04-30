@@ -31,7 +31,7 @@ public class AppJwtUtil {
                 .compressWith(CompressionCodecs.GZIP)  //数据压缩方式
                 .signWith(SignatureAlgorithm.HS512, generalKey()) //加密方式
                 .setExpiration(new Date(currentTime + TOKEN_TIME_OUT * 1000))  //过期时间戳
-                .addClaims(claimMaps) //cla信息
+                .addClaims(claimMaps) //claim信息
                 .compact();
     }
 

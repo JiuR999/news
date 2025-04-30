@@ -37,28 +37,14 @@ public class UserRoleServiceImpl implements UserRoleService {
         List<UserRole> menus = userRoleMapper.getByRoleId(roleId);
         List<UserRole> res = new ArrayList<>();
         HashMap<Integer, UserRole> tmpParentMap = new HashMap<>();
-//        HashMap<Integer, List<MenuVO>> map = new HashMap<>();
         for (UserRole userRole : menus) {
             userRole.setChildren(new ArrayList<>());
-//            MenuVO menuVO = new MenuVO();
-//            menuVO.setChildren(new ArrayList<>());
-//            menuVO.setIcon(userRole.getIcon());
-//            menuVO.setKey(userRole.getKey());
-//            menuVO.setLabel(userRole.getLabel());
-//            menuVO.setTitle(userRole.getLabel());
             if (userRole.getParentId() == 0) {
                 tmpParentMap.put(userRole.getKey(), userRole);
             }
             for (int i = 0; i < menus.size(); i++) {
                 UserRole tmp = menus.get(i);
                 if (Objects.equals(tmp.getParentId(), userRole.getKey())) {
-//                    MenuVO menuVO1 = new MenuVO();
-//                    menuVO1.setChildren(new ArrayList<>());
-//                    menuVO1.setIcon(tmp.getIcon());
-//                    menuVO1.setKey(tmp.getKey());
-//                    menuVO1.setLabel(tmp.getLabel());
-//                    menuVO1.setTitle(tmp.getLabel());
-//                    UserRole vo = tmpParentMap.get(userRole.getId());
                     userRole.getChildren().add(tmp);
                 }
             }

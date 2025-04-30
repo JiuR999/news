@@ -13,7 +13,8 @@ public class ArticleWebConfig implements WebMvcConfigurer {
         registry.addInterceptor(new ArticleTokenInterceptor())
                 .addPathPatterns("/**")
                 //排除登录、注册接口
-                .excludePathPatterns("/login/**", "/swagger-resources/**"
+                .excludePathPatterns("/login/**"
+                        , "/swagger-resources/**"
                         , "/webjars/**"
                         , "/doc.html"
                         , "/swagger-ui.html/**"

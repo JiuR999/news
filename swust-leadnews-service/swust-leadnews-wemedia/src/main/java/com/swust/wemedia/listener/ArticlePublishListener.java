@@ -15,7 +15,7 @@ import java.time.LocalDateTime;
 import java.util.HashMap;
 
 @Slf4j
-@Component
+//@Component
 public class ArticlePublishListener {
 
     @Autowired

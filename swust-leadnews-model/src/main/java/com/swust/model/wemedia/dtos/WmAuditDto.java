@@ -10,4 +10,5 @@ public class WmAuditDto {
     private Short status;
     //拒绝理由
     private String reason;
+    private String fileContent;
 }

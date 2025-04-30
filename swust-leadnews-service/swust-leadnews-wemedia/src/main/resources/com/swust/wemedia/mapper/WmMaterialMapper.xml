@@ -14,7 +14,8 @@
         is_public,
         wm.status,
         is_collection,
-        wm.created_time
+        wm.created_time,
+        wc.name channel_name
     </sql>
 
     <!-- 定义SQL片段包含公用的JOIN语句 -->
@@ -48,9 +49,22 @@
             <if test="dto.status != null">
                 AND wm.status = #{dto.status}
             </if>
+
+            <if test="dto.fileType != null and dto.fileType != ''">
+                AND wm.file_name LIKE CONCAT('%', #{dto.fileType})
+            </if>
         </where>
         order by wm.created_time desc
         limit #{offset},#{size}
+    </select>
+
+    <select id="listFileType" resultType="java.lang.String">
+        SELECT DISTINCT
+            CASE
+                WHEN file_name LIKE '%.%' THEN SUBSTRING_INDEX(file_name, '.', -1)
+                ELSE 'unknow'
+                END AS file_extension
+        FROM wm_file
     </select>
 
 </mapper>

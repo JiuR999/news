@@ -55,5 +55,23 @@
             <artifactId>spring-cloud-commons</artifactId>
         </dependency>
 
+
+<!--        &lt;!&ndash; Elasticsearch Java API Client &ndash;&gt;
+        <dependency>
+            <groupId>co.elastic.clients</groupId>
+            <artifactId>elasticsearch-java</artifactId>
+            <version>7.17.28</version>
+        </dependency>-->
+
+
+
+
+        <!-- 还需要添加兼容版本的 Jackson 库，因为 RestHighLevelClient 依赖它 -->
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-databind</artifactId>
+            <version>2.15.0</version> <!-- 或者一个兼容的版本 -->
+        </dependency>
+
     </dependencies>
 </project>

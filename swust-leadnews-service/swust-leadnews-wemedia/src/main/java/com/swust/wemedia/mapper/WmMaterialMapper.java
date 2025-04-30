@@ -18,4 +18,6 @@ import java.util.List;
  */
 public interface WmMaterialMapper extends BaseMapper<WmMaterial> {
     List<WmMaterialVO> list(@Param("dto") WmQueryDto dto, Integer offset, Integer size);
+
+    List<String> listFileType();
 }

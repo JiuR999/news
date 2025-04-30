@@ -17,6 +17,9 @@ public interface IWmNewsClient {
     @PostMapping("/api/v1/news/audit")
     ResponseResult audit(@RequestBody WmAuditDto dto);
 
+    @PostMapping("/api/v1/material/audit")
+    ResponseResult auditFile(@RequestBody WmAuditDto dto);
+
     @PostMapping("/api/v1/user/add")
     ResponseResult addUser(@RequestBody WmUser dto);
 }

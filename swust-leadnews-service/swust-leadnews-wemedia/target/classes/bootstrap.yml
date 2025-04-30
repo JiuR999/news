@@ -26,3 +26,7 @@ mybatis-plus:
   type-aliases-package: com.heima.model.media.pojos
   configuration:
     log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+es:
+  host: 127.0.0.1
+  port: 9200
+  scheme: http

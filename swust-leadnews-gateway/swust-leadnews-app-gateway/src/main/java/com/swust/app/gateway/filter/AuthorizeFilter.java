@@ -24,7 +24,7 @@ public class AuthorizeFilter implements Ordered, GlobalFilter {
         ServerHttpRequest request = exchange.getRequest();
         ServerHttpResponse response = exchange.getResponse();
         //2.判断是否是登录
-        if(request.getURI().getPath().contains("/login")){
+        if (request.getURI().getPath().contains("/login")) {
             log.info("用户Login");
             //放行
             return chain.filter(exchange);
@@ -34,9 +34,9 @@ public class AuthorizeFilter implements Ordered, GlobalFilter {
         String token = request.getHeaders().getFirst("Token");
 
         //4.判断token是否存在
-        if(StringUtils.isBlank(token)){
+        if (StringUtils.isBlank(token)) {
             response.setStatusCode(HttpStatus.UNAUTHORIZED);
-            log.info("用户未登录访问{}",request.getURI().getPath());
+            log.info("用户未登录访问{}", request.getURI().getPath());
             return response.setComplete();
         }
 
@@ -45,25 +45,30 @@ public class AuthorizeFilter implements Ordered, GlobalFilter {
             Claims claimsBody = AppJwtUtil.getClaimsBody(token);
             //是否是过期
             int result = AppJwtUtil.verifyToken(claimsBody);
-            if(result == 1 || result  == 2){
+            if (result == 1 || result == 2) {
                 response.setStatusCode(HttpStatus.UNAUTHORIZED);
                 return response.setComplete();
             }
+            if (result == -1) {
+                String newToken = AppJwtUtil.getToken(AppJwtUtil.getClaimsBody(token));
+                log.info("续期{}", newToken);
+            }
             String userStr = (String) claimsBody.get("current_user");
             // 创建新的请求对象并替换原来的请求对象
-            ServerHttpRequest newRequest = request.mutate()
-                    .header("current_user", userStr)
-                    .build();
+            ServerHttpRequest.Builder builder = request.mutate()
+                    .header("current_user", userStr);
+
+            ServerHttpRequest newRequest = builder.build();
             exchange = exchange.mutate().request(newRequest).build();
-            log.info("用户"+userStr+"登录");
-        }catch (Exception e){
+            log.info("用户" + userStr + "登录");
+        } catch (Exception e) {
             e.printStackTrace();
             response.setStatusCode(HttpStatus.UNAUTHORIZED);
             return response.setComplete();
         }
 
         //6.放行
-        return chain.filter(exchange).then(Mono.fromRunnable(()->{
+        return chain.filter(exchange).then(Mono.fromRunnable(() -> {
             log.info("后置全局过滤器");
 
         }));
@@ -71,6 +76,7 @@ public class AuthorizeFilter implements Ordered, GlobalFilter {
 
     /**
      * 优先级设置  值越小  优先级越高
+     *
      * @return
      */
     @Override

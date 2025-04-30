@@ -56,7 +56,7 @@ public class WmMaterial implements Serializable {
     private String reason;
 
     @ApiModelProperty(value = "所属频道")
-    private Short channelID;
+    private Integer channelId;
 
     @ApiModelProperty(value = "创建时间")
     @TableField(value = "created_time", fill = FieldFill.INSERT)

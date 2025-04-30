@@ -38,4 +38,9 @@ public class WmQueryDto extends PageRequestDto {
      * 当前状态
      */
     private Short status;
+
+    /**
+     * 文件类型
+     */
+    private String fileType;
 }

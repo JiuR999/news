@@ -11,9 +11,11 @@ import com.swust.model.common.dtos.ResponseResult;
 import com.swust.model.common.enums.TaskTypeEnum;
 import com.swust.model.schedule.dtos.Task;
 import com.swust.model.wemedia.dtos.WmAuditDto;
+import com.swust.model.wemedia.dtos.WmMaterialSearchDto;
 import com.swust.model.wemedia.pojos.WmNews;
 import com.swust.utils.common.ProtostuffUtil;
 import com.swust.utils.common.SensitiveWordUtil;
+import org.elasticsearch.client.RestHighLevelClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
@@ -37,6 +39,8 @@ public class ScheduleTask {
     @Autowired
     IWmNewsClient wmNewsClient;
 
+    @Autowired
+    RestHighLevelClient restHighLevelClient;
     /**
      * 定时刷新任务队列
      */
@@ -133,6 +137,57 @@ public class ScheduleTask {
                 System.out.println(result.getData());
                 if (result.getCode().equals(200) && result.getData() != null) {
                     System.err.println(news.getTitle() + "-----------" + "审核失败,稍后人工审核！");
+                }
+            }
+        }
+    }
+
+    /**
+     * 定时审核文件资料任务
+     * 定时从延迟任务队列拉取
+     */
+    @Scheduled(fixedRate = 5000)
+    public void auditFile() {
+        ResponseResult responseResult = scheduleClient.poll(TaskTypeEnum.FILE_AUDIT_TIME.getTaskType(), TaskTypeEnum.FILE_AUDIT_TIME.getPriority());
+        if (responseResult.getCode().equals(200) && responseResult.getData() != null) {
+            String json_str = JSON.toJSONString(responseResult.getData());
+            Task task = JSON.parseObject(json_str, Task.class);
+            byte[] parameters = task.getParameters();
+            //序列化资料类型
+            WmMaterialSearchDto dto = ProtostuffUtil.deserialize(parameters, WmMaterialSearchDto.class);
+            System.out.println(dto.getFileName() + "-----------" + "准备审核");
+
+            WmAuditDto newsDto = new WmAuditDto();
+            newsDto.setId(Long.valueOf(dto.getId()));
+            //可能发生异常 续时
+            try {
+                //调用审核方法 自动审核
+                Map<String, Integer> matchWords = SensitiveWordUtil.matchWords(dto.getFileContent());
+                if (!matchWords.isEmpty()) {
+                    System.out.println("匹配到敏感词" + matchWords);
+                    //审核不通过 调用更新 回传不通过理由
+                    newsDto.setStatus((short) 3);
+                    newsDto.setReason("文章包含敏感词:" + matchWords);
+                } else {
+                    //审核通过 调用更新
+                    newsDto.setStatus((short) 1);
+                }
+                ResponseResult result = wmNewsClient.audit(newsDto);
+
+                String audited = (String) result.getData();
+                if (audited.contains("审核失败")) {
+                    System.err.println(dto.getFileContent() + "-----------" + "审核失败");
+                } else {
+                    //存入Es
+
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+                task.setExecuteTime(LocalDateTime.now().plusMinutes(5).atZone(ZoneId.systemDefault()).toInstant().toEpochMilli());
+                ResponseResult result = scheduleClient.addTask(task);
+                System.out.println(result.getData());
+                if (result.getCode().equals(200) && result.getData() != null) {
+                    System.err.println(dto.getFileName() + "-----------" + "审核失败,稍后人工审核！");
                 }
             }
         }

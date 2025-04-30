@@ -6,9 +6,11 @@ import com.swust.model.wemedia.dtos.WmAuditDto;
 import com.swust.model.wemedia.dtos.WmMateriaDto;
 import com.swust.model.wemedia.dtos.WmQueryDto;
 import com.swust.model.wemedia.pojos.WmMaterial;
+import com.swust.model.wemedia.vos.WmMaterialVO;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 
 /**
  * <p>
@@ -23,13 +25,15 @@ public interface IWmMaterialService extends IService<WmMaterial> {
     ResponseResult uploadPicture(MultipartFile multipartFile);
     ResponseResult upload(MultipartFile[] multipartFiles);
     void download(String url, HttpServletResponse response);
-    ResponseResult<WmMaterial> list(WmQueryDto wmQueryDto);
+    ResponseResult list(WmQueryDto wmQueryDto);
 
     ResponseResult delete(Integer id);
 
     ResponseResult collect(Integer id);
 
-    ResponseResult add(WmMateriaDto dto);
+    ResponseResult add(WmMateriaDto dto) throws IOException;
 
     ResponseResult audit(WmAuditDto dto);
+
+    ResponseResult listFileType();
 }

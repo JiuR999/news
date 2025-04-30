@@ -30,7 +30,7 @@ public class ArticleHomeController {
         return ResponseResult.okResult(articleService.list(wrapper));
     }
 
-    //Golang 发起请求时 可以不传递 也能调用shouledBindJson进行参数绑定
+    //Golang 发起请求时 可以不传递 也能调用shouldBindJson进行参数绑定
     @PostMapping("/page")
     public ResponseResult page(@RequestBody(required = false) ArticleHomeDto dto) {
         return ResponseResult.okResult(articleService.page(dto));

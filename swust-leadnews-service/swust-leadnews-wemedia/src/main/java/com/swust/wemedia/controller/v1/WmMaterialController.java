@@ -10,11 +10,15 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
+import org.elasticsearch.client.RequestOptions;
+import org.elasticsearch.client.RestHighLevelClient;
+import org.elasticsearch.client.indices.GetIndexRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 
 @RestController
 @RequestMapping("/api/v1/material")
@@ -23,26 +27,28 @@ public class WmMaterialController {
     @Autowired
     IWmMaterialService wmMaterialService;
 
+    @Autowired
+    RestHighLevelClient restHighLevelClient;
     @PostMapping("/upload_picture")
     @ApiOperation(value = "上传图片素材")
-    @ApiImplicitParam(name = "multipartFile", value = "图片文件", required = true, dataType = "MultipartFile")
+//    @ApiImplicitParam(name = "multipartFile", value = "图片文件", required = true, dataType = "MultipartFile")
     public ResponseResult uploadPicture(MultipartFile multipartFile){
         return wmMaterialService.uploadPicture(multipartFile);
     }
 
     @PostMapping("/upload")
     @ApiOperation(value = "批量上传素材")
-    @ApiImplicitParam(name = "files", value = "文件数组", required = true, dataType = "MultipartFile[]")
+//    @ApiImplicitParam(name = "files", value = "文件数组", required = true, dataType = "MultipartFile[]")
     public ResponseResult upload(@RequestParam("files")  MultipartFile[] multipartFiles){
         return wmMaterialService.upload(multipartFiles);
     }
 
     @GetMapping("/download")
     @ApiOperation(value = "下载素材文件", produces = "application/octet-stream")
-    @ApiImplicitParams({
-            @ApiImplicitParam(name = "url", value = "文件下载地址", required = true),
-            @ApiImplicitParam(name = "response", value = "响应对象", dataType = "HttpServletResponse")
-    })
+//    @ApiImplicitParams({
+//            @ApiImplicitParam(name = "url", value = "文件下载地址", required = true),
+//            @ApiImplicitParam(name = "response", value = "响应对象", dataType = "HttpServletResponse")
+//    })
     public void download(String url, HttpServletResponse response) {
         wmMaterialService.download(url,response);
     }
@@ -65,7 +71,7 @@ public class WmMaterialController {
      */
     @PostMapping("/list")
     @ApiOperation("分页查询素材列表")
-    @ApiImplicitParam(name = "wmQueryDto", value = "查询参数", required = true, dataTypeClass = WmQueryDto.class)
+//    @ApiImplicitParam(name = "wmQueryDto", value = "查询参数", required = true, dataTypeClass = WmQueryDto.class)
     public ResponseResult List(@RequestBody WmQueryDto wmQueryDto){
         return wmMaterialService.list(wmQueryDto);
     }
@@ -73,34 +79,50 @@ public class WmMaterialController {
 
     @PostMapping("/add")
     @ApiOperation("新增素材关联关系")
-    @ApiImplicitParam(name = "dto", value = "素材关联参数", required = true, dataTypeClass = WmMateriaDto.class)
-    public ResponseResult add(@RequestBody WmMateriaDto dto){
+//    @ApiImplicitParam(name = "dto", value = "素材关联参数", required = true, dataTypeClass = WmMateriaDto.class)
+    public ResponseResult add(@RequestBody WmMateriaDto dto) throws IOException {
         return wmMaterialService.add(dto);
     }
 
-    @GetMapping("/del/{id}")
+    @DeleteMapping("/del/{id}")
     @ApiOperation("删除素材文件")
-    @ApiImplicitParam(name = "id", value = "素材ID", required = true, paramType = "path")
+//    @ApiImplicitParam(name = "id", value = "素材ID", required = true, paramType = "path")
     public ResponseResult delete(@PathVariable Integer id) {
         return wmMaterialService.delete(id);
     }
 
     @PostMapping("/deleteBatch")
     @ApiOperation("根据ids删除素材")
+//    @ApiImplicitParam(name = "ids", value = "素材IDs", required = true, dataTypeClass = IdsDto.class)
     public ResponseResult deleteBatch(@RequestBody IdsDto ids) {
         return ResponseResult.okResult(wmMaterialService.removeBatchByIds(ids.getIds()));
     }
 
     @GetMapping("/collect/{id}")
     @ApiOperation("收藏/取消收藏素材")
-    @ApiImplicitParam(name = "id", value = "素材ID", required = true, paramType = "path")
+//    @ApiImplicitParam(name = "id", value = "素材ID", required = true, paramType = "path")
     public ResponseResult collect(@PathVariable Integer id) {
         return wmMaterialService.collect(id);
     }
 
     @PostMapping("/audit")
     @ApiOperation("审核文件")
+//    @ApiImplicitParam(name = "dto", value = "审核DTO", required = true, dataTypeClass = WmAuditDto.class)
     public ResponseResult audit(@RequestBody WmAuditDto dto) {
         return wmMaterialService.audit(dto);
+    }
+
+    @GetMapping("/listFileType")
+    @ApiOperation("获取所有文件类型")
+//    @ApiImplicitParam(name = "dto", value = "审核DTO", required = true, dataTypeClass = WmAuditDto.class)
+    public ResponseResult listFileType() {
+        return wmMaterialService.listFileType();
+    }
+
+    @GetMapping("/index")
+    @ApiOperation("获取所有文件类型")
+//    @ApiImplicitParam(name = "dto", value = "审核DTO", required = true, dataTypeClass = WmAuditDto.class)
+    public ResponseResult exists(String index) throws IOException {
+        return ResponseResult.okResult(restHighLevelClient.indices().exists(new GetIndexRequest(index), RequestOptions.DEFAULT));
     }
 }
