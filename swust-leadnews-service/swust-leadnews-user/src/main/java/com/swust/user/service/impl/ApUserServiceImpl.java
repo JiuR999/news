@@ -147,6 +147,10 @@ public class ApUserServiceImpl extends ServiceImpl<ApUserMapper, ApUser> impleme
 
     @Override
     public Boolean add(ApUser userDto) {
+        ApUser dbUser = getOne(Wrappers.<ApUser>lambdaQuery().eq(ApUser::getPhone, userDto.getPhone()));
+        if (dbUser != null) {
+            return false;
+        }
         //生成密码加密盐
         String salt = SaltGenerator.generateSalt(6);
         userDto.setSalt(salt);
@@ -154,6 +158,8 @@ public class ApUserServiceImpl extends ServiceImpl<ApUserMapper, ApUser> impleme
         String mded = DigestUtils.md5DigestAsHex((userDto.getPassword() + salt).getBytes());
         userDto.setPassword(mded);
         boolean saved = this.save(userDto);
+        //像角色权限表插入数据 默认学生
+        userRoleMapper.add(3, userDto.getId());
         //向自媒体用户表插入数据
         WmUser wmUser = new WmUser();
         wmUser.setApUserId(userDto.getId());

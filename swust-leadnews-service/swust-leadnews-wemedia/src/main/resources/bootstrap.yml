@@ -30,3 +30,6 @@ es:
   host: 127.0.0.1
   port: 9200
   scheme: http
+logging:
+  level:
+    com.alibaba.cloud.nacos.registry: DEBUG

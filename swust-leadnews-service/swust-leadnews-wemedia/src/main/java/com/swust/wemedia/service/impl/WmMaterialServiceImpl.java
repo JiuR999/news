@@ -1,5 +1,7 @@
 package com.swust.wemedia.service.impl;
 
+import com.alibaba.fastjson.JSON;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.swust.common.constants.AuditConstants;
@@ -21,10 +23,23 @@ import com.swust.wemedia.service.IWmMaterialService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.elasticsearch.action.get.GetRequest;
+import org.elasticsearch.action.index.IndexRequest;
+import org.elasticsearch.action.index.IndexResponse;
+import org.elasticsearch.action.search.SearchRequest;
+import org.elasticsearch.action.search.SearchResponse;
+import org.elasticsearch.client.RequestOptions;
 import org.elasticsearch.client.RestClient;
 import org.elasticsearch.client.RestHighLevelClient;
 import org.elasticsearch.client.indices.GetIndexRequest;
+import org.elasticsearch.index.query.BoolQueryBuilder;
+import org.elasticsearch.index.query.QueryBuilders;
+import org.elasticsearch.rest.RestStatus;
+import org.elasticsearch.search.SearchHits;
+import org.elasticsearch.search.builder.SearchSourceBuilder;
+import org.elasticsearch.search.sort.SortOrder;
+import org.elasticsearch.xcontent.XContentType;
 import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -36,6 +51,7 @@ import java.net.URL;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
+import java.util.stream.Collectors;
 
 /**
  * <p>
@@ -51,13 +67,14 @@ public class WmMaterialServiceImpl extends ServiceImpl<WmMaterialMapper, WmMater
     private static final String TIKA_SERVER_URL = "http://127.0.0.1:9998/tika"; // 默认Tika服务地址
     final FileStorageService fileStorageService;
     final WmNewsService wmNewsService;
-    RestClient client;
+    RestHighLevelClient restHighLevelClient;
+
     public WmMaterialServiceImpl(FileStorageService fileStorageService,
                                  WmNewsService wmNewsService,
-                                 RestClient restClient) {
+                                 RestHighLevelClient restClient) {
         this.fileStorageService = fileStorageService;
         this.wmNewsService = wmNewsService;
-        this.client = restClient;
+        this.restHighLevelClient = restClient;
     }
 
     @Override
@@ -137,6 +154,71 @@ public class WmMaterialServiceImpl extends ServiceImpl<WmMaterialMapper, WmMater
         }
     }
 
+    public ResponseResult list2(WmQueryDto wmQueryDto) {
+        wmQueryDto.checkParam();
+        wmQueryDto.checkParam();
+
+        // 构建 Elasticsearch 查询请求
+        SearchRequest searchRequest = new SearchRequest("knowledge"); // 替换为你的索引名称
+        SearchSourceBuilder sourceBuilder = new SearchSourceBuilder();
+
+        // 构建查询条件
+        BoolQueryBuilder boolQuery = QueryBuilders.boolQuery();
+
+        // 添加用户ID过滤条件
+        if (wmQueryDto.getKeyWord() != null) {
+            boolQuery.must(QueryBuilders.termQuery("fileContent", wmQueryDto.getKeyWord()));
+        }
+
+        // 添加文件类型过滤条件                                              org.springframework.beans.factory.annotation.Autowired;
+        if (wmQueryDto.getFileType() != null) {
+            boolQuery.must(QueryBuilders.termQuery("fileName", wmQueryDto.getFileType()));
+        }
+
+        // 添加用户ID过滤条件
+        if (wmQueryDto.getUserId() != null) {
+            boolQuery.must(QueryBuilders.termQuery("userId", wmQueryDto.getUserId()));
+        }
+
+        // 添加收藏状态过滤条件
+        if (wmQueryDto.getIsCollection() != null && wmQueryDto.getIsCollection() == 1) {
+            boolQuery.must(QueryBuilders.termQuery("isCollection", 1));
+        }
+
+        // 设置分页
+        sourceBuilder.from((wmQueryDto.getPage() - 1) * wmQueryDto.getSize());
+        sourceBuilder.size(wmQueryDto.getSize());
+
+        // 设置排序
+        sourceBuilder.sort("createdTime", SortOrder.DESC);
+
+        // 将查询条件添加到请求中
+        sourceBuilder.query(boolQuery);
+        searchRequest.source(sourceBuilder);
+
+        // 执行查询
+        try {
+            SearchResponse searchResponse = restHighLevelClient.search(searchRequest, RequestOptions.DEFAULT);
+            SearchHits hits = searchResponse.getHits();
+
+            // 将查询结果转换为 WmMaterialVO 列表
+            List<WmMaterialVO> vos = Arrays.stream(hits.getHits())
+                    .map(hit -> {
+                        WmMaterialVO vo = JSON.parseObject(hit.getSourceAsString(), WmMaterialVO.class);
+                        return vo;
+                    })
+                    .collect(Collectors.toList());
+
+            // 构建分页响应结果
+            PageResponseResult result = new PageResponseResult(wmQueryDto.getPage(), wmQueryDto.getSize(), (int) hits.getTotalHits().value);
+            result.setData(vos);
+            return result;
+        } catch (IOException e) {
+            log.error("Elasticsearch 查询失败", e);
+            return ResponseResult.errorResult(AppHttpCodeEnum.SERVER_ERROR);
+        }
+    }
+
     public ResponseResult list(WmQueryDto wmQueryDto) {
         wmQueryDto.checkParam();
 /*        IPage page = new Page(wmQueryDto.getPage(), wmQueryDto.getSize());
@@ -147,10 +229,13 @@ public class WmMaterialServiceImpl extends ServiceImpl<WmMaterialMapper, WmMater
         lambdaQueryWrapper.eq(wmQueryDto.getUserId() != null, WmMaterial::getUserId, wmQueryDto.getUserId());
         lambdaQueryWrapper.orderByDesc(WmMaterial::getCreatedTime);
         page = page(page, lambdaQueryWrapper);*/
-        List<WmMaterialVO> vos = this.baseMapper.list(wmQueryDto, (wmQueryDto.getPage() - 1) * wmQueryDto.getSize(), wmQueryDto.getSize());
+
+        return list2(wmQueryDto);
+
+/*        List<WmMaterialVO> vos = this.baseMapper.list(wmQueryDto, (wmQueryDto.getPage() - 1) * wmQueryDto.getSize(), wmQueryDto.getSize());
         PageResponseResult result = new PageResponseResult(wmQueryDto.getPage(), wmQueryDto.getSize(), vos.size());
         result.setData(vos);
-        return result;
+        return result;*/
     }
 
     @Override
@@ -200,16 +285,16 @@ public class WmMaterialServiceImpl extends ServiceImpl<WmMaterialMapper, WmMater
             material.setUrl(url);
             //将文件解析内容然后存ES
             try {
-                String content = parseDocumentFromURL(url);
                 material.setUserId(user.getId());
                 material.setStatus(AuditConstants.SHOULD_AUDIT);
                 material.setChannelId(dto.getChannelId());
+                String content = parseDocumentFromURL(url);
                 WmMaterialSearchDto searchDto = new WmMaterialSearchDto();
-                BeanUtils.copyProperties(material, searchDto);
-                searchDto.setFileContent(content);
                 // TODO: 2023/4/17 搜索内容存到ES
                 boolean saved = this.save(material);
-                if(saved) {
+                if (saved) {
+                    BeanUtils.copyProperties(material, searchDto);
+                    searchDto.setFileContent(content);
                     //提交到审核队列
                     if (saved) {
                         //加入队列 随机时间执行
@@ -235,7 +320,7 @@ public class WmMaterialServiceImpl extends ServiceImpl<WmMaterialMapper, WmMater
             material.setReason(dto.getReason());
         }
         int updated = this.baseMapper.updateById(material);
-        if(updated < 1) {
+        if (updated < 1) {
             return ResponseResult.errorResult(AppHttpCodeEnum.DATA_NOT_EXIST);
         }
         material = this.getById(material.getId());
@@ -243,7 +328,21 @@ public class WmMaterialServiceImpl extends ServiceImpl<WmMaterialMapper, WmMater
         BeanUtils.copyProperties(material, searchDto);
         searchDto.setFileContent(dto.getFileContent());
         //写入Es
-        GetIndexRequest request = new GetIndexRequest("knowledge");
+        // 创建索引请求
+        IndexRequest request = new IndexRequest("knowledge");
+        request.id(searchDto.getId().toString()); // 设置文档ID
+        request.source(JSON.toJSONString(searchDto), XContentType.JSON);
+        IndexResponse indexResponse = null;
+        try {
+            indexResponse = restHighLevelClient.index(request, RequestOptions.DEFAULT);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        if (indexResponse.status() == RestStatus.CREATED) {
+            System.out.println(searchDto.getFileName() + "-----------" + "成功写入ES");
+        } else {
+            System.err.println(searchDto.getFileName() + "-----------" + "写入ES失败");
+        }
         return ResponseResult.okResult(updated);
     }
 
@@ -251,6 +350,38 @@ public class WmMaterialServiceImpl extends ServiceImpl<WmMaterialMapper, WmMater
     public ResponseResult listFileType() {
         List<String> fileType = this.baseMapper.listFileType();
         return ResponseResult.okResult(fileType);
+    }
+
+    @Override
+    public ResponseResult sync() {
+        List<WmMaterial> materials = this.list(new LambdaQueryWrapper<WmMaterial>().eq(WmMaterial::getStatus, 9));
+materials.stream().forEach(material -> {
+    String content = null;
+    try {
+        content = parseDocumentFromURL(material.getUrl());
+    } catch (IOException e) {
+        throw new RuntimeException(e);
+    }
+    WmMaterialSearchDto searchDto = new WmMaterialSearchDto();
+    BeanUtils.copyProperties(material, searchDto);
+    searchDto.setFileContent(content);
+
+    IndexRequest request = new IndexRequest("knowledge");
+    request.id(searchDto.getId().toString()); // 设置文档ID
+    request.source(JSON.toJSONString(searchDto), XContentType.JSON);
+    IndexResponse indexResponse = null;
+    try {
+        indexResponse = restHighLevelClient.index(request, RequestOptions.DEFAULT);
+    } catch (IOException e) {
+        throw new RuntimeException(e);
+    }
+    if (indexResponse.status() == RestStatus.CREATED) {
+        System.out.println(searchDto.getFileName() + "-----------" + "成功写入ES");
+    } else {
+        System.err.println(searchDto.getFileName() + "-----------" + "写入ES失败");
+    }
+});
+        return ResponseResult.okResult(materials);
     }
 
     public static String parseDocumentFromURL(String fileUrl) throws IOException {

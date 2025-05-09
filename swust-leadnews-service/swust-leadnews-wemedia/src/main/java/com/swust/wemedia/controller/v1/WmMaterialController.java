@@ -77,6 +77,13 @@ public class WmMaterialController {
     }
 
 
+    @PostMapping("/sync")
+    @ApiOperation("同步到es")
+    public ResponseResult sync() {
+        return ResponseResult.okResult(wmMaterialService.sync());
+    }
+
+
     @PostMapping("/add")
     @ApiOperation("新增素材关联关系")
 //    @ApiImplicitParam(name = "dto", value = "素材关联参数", required = true, dataTypeClass = WmMateriaDto.class)

@@ -13,7 +13,7 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 @EnableTransactionManagement
 @EnableFeignClients(basePackages = "com.swust.apis")
 @MapperScan("com.swust.user.mapper")
-public class UserApplication {
+public class  UserApplication {
 
     public static void main(String[] args) {
 

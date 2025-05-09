@@ -1,5 +1,5 @@
 server:
-  port: 61701
+  port: 15701
 spring:
   application:
     #根据此名称匹配配置列表

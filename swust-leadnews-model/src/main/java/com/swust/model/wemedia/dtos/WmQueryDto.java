@@ -43,4 +43,6 @@ public class WmQueryDto extends PageRequestDto {
      * 文件类型
      */
     private String fileType;
+
+    private String keyWord;
 }

@@ -5,7 +5,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
-//@Configuration
+@Configuration
 public class WmWebConfig implements WebMvcConfigurer {
 
     @Override
@@ -20,7 +20,8 @@ public class WmWebConfig implements WebMvcConfigurer {
                         , "/v2/**"
                         , "/api/v1/material/upload"
                         , "/api/v1/news/audit"
-                        , "/api/v1/user/add");
+                        , "/api/v1/user/add"
+                        , "/api/v1/material/audit");
     }
 
 }

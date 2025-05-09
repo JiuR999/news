@@ -57,7 +57,7 @@ public class ApUserController {
 
     @PostMapping("/add")
     public ResponseResult add(@RequestBody ApUser userDto) {
-        return ResponseResult.okResult(userService.add(userDto));
+        return ResponseResult.okResult(userService.add(userDto)?"注册成功！":"注册失败, 该账号已经注册！");
     }
     @PostMapping("/update")
     public ResponseResult update(@RequestBody ApUser userDto) {

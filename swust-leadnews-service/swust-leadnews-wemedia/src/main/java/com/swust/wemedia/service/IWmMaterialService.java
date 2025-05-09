@@ -36,4 +36,6 @@ public interface IWmMaterialService extends IService<WmMaterial> {
     ResponseResult audit(WmAuditDto dto);
 
     ResponseResult listFileType();
+
+    ResponseResult sync();
 }

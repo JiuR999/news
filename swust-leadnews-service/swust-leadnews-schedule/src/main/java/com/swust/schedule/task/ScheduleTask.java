@@ -15,7 +15,12 @@ import com.swust.model.wemedia.dtos.WmMaterialSearchDto;
 import com.swust.model.wemedia.pojos.WmNews;
 import com.swust.utils.common.ProtostuffUtil;
 import com.swust.utils.common.SensitiveWordUtil;
+import org.elasticsearch.action.index.IndexRequest;
+import org.elasticsearch.action.index.IndexResponse;
+import org.elasticsearch.client.RequestOptions;
 import org.elasticsearch.client.RestHighLevelClient;
+import org.elasticsearch.rest.RestStatus;
+import org.elasticsearch.xcontent.XContentType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
@@ -170,16 +175,17 @@ public class ScheduleTask {
                     newsDto.setReason("文章包含敏感词:" + matchWords);
                 } else {
                     //审核通过 调用更新
+                    //存入es
                     newsDto.setStatus((short) 1);
                 }
-                ResponseResult result = wmNewsClient.audit(newsDto);
+                newsDto.setFileContent(dto.getFileContent());
+                ResponseResult result = wmNewsClient.auditFile(newsDto);
 
-                String audited = (String) result.getData();
+                String audited = result.getMsg();
                 if (audited.contains("审核失败")) {
                     System.err.println(dto.getFileContent() + "-----------" + "审核失败");
                 } else {
                     //存入Es
-
                 }
             } catch (Exception e) {
                 e.printStackTrace();

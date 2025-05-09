@@ -26,6 +26,9 @@
     <properties>
         <maven.compiler.source>8</maven.compiler.source>
         <maven.compiler.target>8</maven.compiler.target>
+        <!-- 统一指定 Jackson 版本 -->
+        <jackson.version>2.15.3</jackson.version>
+
     </properties>
 
     <dependencies>
@@ -66,12 +69,21 @@
 
 
 
-        <!-- 还需要添加兼容版本的 Jackson 库，因为 RestHighLevelClient 依赖它 -->
+        <!-- 显式引入 Jackson 所有核心模块 -->
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-core</artifactId>
+            <version>${jackson.version}</version>
+        </dependency>
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-databind</artifactId>
-            <version>2.15.0</version> <!-- 或者一个兼容的版本 -->
+            <version>${jackson.version}</version>
         </dependency>
-
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-annotations</artifactId>
+            <version>${jackson.version}</version>
+        </dependency>
     </dependencies>
 </project>
